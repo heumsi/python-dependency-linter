@@ -269,6 +269,13 @@ Exit codes:
 
 - `0` — No violations
 - `1` — Violations found
+- `2` — Config file not found
+
+If no `--config` is given, the tool looks for `.python-dependency-linter.yaml` in the current directory. If the config file does not exist, the tool prints an error and exits with code `2`:
+
+```
+Error: Config file not found: .python-dependency-linter.yaml
+```
 
 ## Pre-commit
 
