@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fnmatch
 from pathlib import Path
 
 import click
@@ -46,7 +47,7 @@ def _normalize_pattern(pattern: str, project_root: Path) -> str:
 
 
 def _matches_any(path: Path, patterns: list[str]) -> bool:
-    return any(path.match(p) for p in patterns)
+    return any(fnmatch.fnmatch(str(path), p) for p in patterns)
 
 
 def _find_python_files(
