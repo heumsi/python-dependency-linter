@@ -1,0 +1,152 @@
+from python_dependency_linter.checker import Violation, check_import
+from python_dependency_linter.config import AllowDeny, Rule
+from python_dependency_linter.parser import ImportInfo
+from python_dependency_linter.resolver import ImportCategory
+
+
+def test_allow_all_when_no_rules():
+    result = check_import(
+        import_info=ImportInfo(module="sqlalchemy", lineno=1),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=None,
+        source_module="contexts.boards.adapters",
+    )
+    assert result is None
+
+
+def test_allow_whitelist_pass():
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(third_party=["pydantic"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="pydantic", lineno=1),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert result is None
+
+
+def test_allow_whitelist_violation():
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(third_party=["pydantic"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="sqlalchemy", lineno=5),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert isinstance(result, Violation)
+    assert result.rule_name == "domain-isolation"
+    assert result.source_module == "contexts.boards.domain"
+    assert result.imported_module == "sqlalchemy"
+    assert result.category == ImportCategory.THIRD_PARTY
+    assert result.lineno == 5
+
+
+def test_deny_blacklist_violation():
+    rule = Rule(
+        name="adapters-deny",
+        modules="contexts.*.adapters",
+        deny=AllowDeny(third_party=["boto3"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="boto3", lineno=3),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.adapters",
+    )
+    assert isinstance(result, Violation)
+    assert result.rule_name == "adapters-deny"
+
+
+def test_deny_blacklist_pass():
+    rule = Rule(
+        name="adapters-deny",
+        modules="contexts.*.adapters",
+        deny=AllowDeny(third_party=["boto3"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="sqlalchemy", lineno=1),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.adapters",
+    )
+    assert result is None
+
+
+def test_allow_and_deny_combined():
+    rule = Rule(
+        name="combined",
+        modules="contexts.*.adapters",
+        allow=AllowDeny(third_party=["*"]),
+        deny=AllowDeny(third_party=["boto3"]),
+    )
+    # allowed by wildcard, but denied explicitly
+    result = check_import(
+        import_info=ImportInfo(module="boto3", lineno=1),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.adapters",
+    )
+    assert isinstance(result, Violation)
+
+    # allowed by wildcard, not denied
+    result = check_import(
+        import_info=ImportInfo(module="sqlalchemy", lineno=2),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.adapters",
+    )
+    assert result is None
+
+
+def test_allow_local_with_wildcard():
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(local=["contexts.*.domain"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="contexts.boards.domain.models", lineno=1),
+        category=ImportCategory.LOCAL,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert result is None
+
+
+def test_allow_local_violation():
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(local=["contexts.*.domain"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="contexts.boards.application.service", lineno=6),
+        category=ImportCategory.LOCAL,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert isinstance(result, Violation)
+
+
+def test_no_allow_for_category_means_allow_all():
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(third_party=["pydantic"]),
+        # standard_library is not specified in allow -> allow all
+    )
+    result = check_import(
+        import_info=ImportInfo(module="os", lineno=1),
+        category=ImportCategory.STANDARD_LIBRARY,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert result is None
