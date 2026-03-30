@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-03-30
+
+### Bug Fixes
+
+- Use fnmatch for include/exclude pattern matching (#15)
+
+### Features
+
+- Remove --project-root, auto-detect from config file location (#14)
 ## [0.3.0] - 2026-03-30
 
 ### Bug Fixes
