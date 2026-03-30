@@ -1,6 +1,7 @@
 from python_dependency_linter.config import AllowDeny, Rule
 from python_dependency_linter.matcher import (
     find_matching_rules,
+    match_pattern_with_captures,
     matches_pattern,
     merge_rules,
 )
@@ -117,3 +118,67 @@ def test_merge_rules_merges_deny():
     merged = merge_rules([rule1, rule2])
 
     assert sorted(merged.deny.third_party) == ["boto3", "requests"]
+
+
+def test_capture_single():
+    result = match_pattern_with_captures(
+        "src.contexts.{context}.domain", "src.contexts.analytics.domain"
+    )
+    assert result == {"context": "analytics"}
+
+
+def test_capture_multiple():
+    result = match_pattern_with_captures(
+        "src.contexts.{ctx}.adapters.{dir}", "src.contexts.auth.adapters.inbound"
+    )
+    assert result == {"ctx": "auth", "dir": "inbound"}
+
+
+def test_capture_duplicate_name_consistent():
+    result = match_pattern_with_captures("src.{a}.middle.{a}", "src.foo.middle.foo")
+    assert result == {"a": "foo"}
+
+
+def test_capture_duplicate_name_inconsistent():
+    result = match_pattern_with_captures("src.{a}.middle.{a}", "src.foo.middle.bar")
+    assert result is None
+
+
+def test_capture_no_match():
+    result = match_pattern_with_captures(
+        "src.contexts.{context}.domain", "src.utils.helpers"
+    )
+    assert result is None
+
+
+def test_capture_no_captures_with_star():
+    result = match_pattern_with_captures("src.*.domain", "src.analytics.domain")
+    assert result == {}
+
+
+def test_capture_coexist_with_star():
+    result = match_pattern_with_captures(
+        "src.{ctx}.*.domain", "src.auth.adapters.domain"
+    )
+    assert result == {"ctx": "auth"}
+
+
+def test_capture_coexist_with_double_star():
+    result = match_pattern_with_captures(
+        "src.{ctx}.**.domain", "src.auth.deep.nested.domain"
+    )
+    assert result == {"ctx": "auth"}
+
+
+def test_capture_exact_no_wildcards():
+    result = match_pattern_with_captures(
+        "src.contexts.analytics.domain", "src.contexts.analytics.domain"
+    )
+    assert result == {}
+
+
+def test_capture_exact_no_wildcards_no_match():
+    result = match_pattern_with_captures(
+        "src.contexts.analytics.domain", "src.contexts.auth.domain"
+    )
+    assert result is None
