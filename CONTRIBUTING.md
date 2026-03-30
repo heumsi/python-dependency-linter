@@ -42,7 +42,7 @@ Commit messages must follow [Conventional Commits](https://www.conventionalcommi
 
 ## Pre-commit Hooks
 
-This project uses [pre-commit](https://pre-commit.com/) with [ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+This project uses [pre-commit](https://pre-commit.com/) for linting, formatting, and type checking.
 
 ```bash
 # Install pre-commit hooks
