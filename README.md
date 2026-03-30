@@ -152,6 +152,8 @@ Dependencies are classified into three categories (per PEP 8):
 - `third_party` — Installed packages (`pydantic`, `sqlalchemy`, ...)
 - `local` — Modules in your project
 
+Both absolute imports (`from contexts.boards.domain import models`) and relative imports (`from ..domain import models`) are analyzed. Relative imports are resolved to absolute module names based on the file's location.
+
 ### Behavior
 
 - **No rule** — Everything is allowed

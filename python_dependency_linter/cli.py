@@ -74,7 +74,7 @@ def check(config_path: str, project_root: str):
             continue
 
         merged_rule = merge_rules(matching_rules)
-        imports = parse_imports(file_path)
+        imports = parse_imports(file_path, root)
 
         file_violations = []
         for imp in imports:
