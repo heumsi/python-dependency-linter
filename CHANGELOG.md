@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-03-30
+
+### Bug Fixes
+
+- Use exit code 2 for config file not found (#11)
+
+### Documentation
+
+- Add CONTRIBUTING.md and CLAUDE.md
+- Add PR title convention to template and CONTRIBUTING.md
+- Add release process to CONTRIBUTING.md and /release skill
+
+### Features
+
+- Resolve relative imports to absolute module names (#10)
+- Add include/exclude file filtering options (#12)
+
+### Miscellaneous
+
+- Add /commit skill for Claude Code
+- Add uv.lock for reproducible builds
 ## [0.2.0] - 2026-03-30
 
 ### Documentation
