@@ -1,0 +1,61 @@
+from __future__ import annotations
+
+from python_dependency_linter.config import AllowDeny, Rule
+
+
+def matches_pattern(pattern: str, module: str) -> bool:
+    pattern_parts = pattern.split(".")
+    module_parts = module.split(".")
+
+    if len(pattern_parts) != len(module_parts):
+        return False
+
+    for p, m in zip(pattern_parts, module_parts):
+        if p == "*":
+            continue
+        if p != m:
+            return False
+
+    return True
+
+
+def find_matching_rules(module: str, rules: list[Rule]) -> list[Rule]:
+    return [r for r in rules if matches_pattern(r.modules, module)]
+
+
+def _merge_allow_deny(
+    base: AllowDeny | None, override: AllowDeny | None
+) -> AllowDeny | None:
+    if base is None and override is None:
+        return None
+    if base is None:
+        return override
+    if override is None:
+        return base
+
+    def _merge_lists(a: list[str] | None, b: list[str] | None) -> list[str] | None:
+        if a is None and b is None:
+            return None
+        if a is None:
+            return b
+        if b is None:
+            return a
+        return list(set(a + b))
+
+    return AllowDeny(
+        standard_library=_merge_lists(base.standard_library, override.standard_library),
+        third_party=_merge_lists(base.third_party, override.third_party),
+        local=_merge_lists(base.local, override.local),
+    )
+
+
+def merge_rules(rules: list[Rule]) -> Rule:
+    merged = rules[0]
+    for rule in rules[1:]:
+        merged = Rule(
+            name=merged.name,
+            modules=merged.modules,
+            allow=_merge_allow_deny(merged.allow, rule.allow),
+            deny=_merge_allow_deny(merged.deny, rule.deny),
+        )
+    return merged
