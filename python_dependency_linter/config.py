@@ -62,14 +62,18 @@ def _load_yaml(path: Path) -> Config:
     )
 
 
-def _load_pyproject_toml(path: Path) -> Config:
+def _load_toml(path: Path) -> dict:
     try:
         import tomllib
     except ImportError:
         import tomli as tomllib  # type: ignore[no-redef]
 
     with open(path, "rb") as f:
-        data = tomllib.load(f)
+        return tomllib.load(f)
+
+
+def _load_pyproject_toml(path: Path) -> Config:
+    data = _load_toml(path)
     tool_config = data["tool"]["python-dependency-linter"]
     return Config(
         rules=_parse_rules(tool_config["rules"]),
@@ -80,13 +84,7 @@ def _load_pyproject_toml(path: Path) -> Config:
 
 def _has_pdl_section(path: Path) -> bool:
     """Check if a pyproject.toml contains [tool.python-dependency-linter]."""
-    try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
-
-    with open(path, "rb") as f:
-        data = tomllib.load(f)
+    data = _load_toml(path)
     return "python-dependency-linter" in data.get("tool", {})
 
 
