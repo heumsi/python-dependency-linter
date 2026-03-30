@@ -25,6 +25,9 @@ trim = true
 [git]
 conventional_commits = true
 filter_unconventional = true
+commit_preprocessors = [
+  { pattern = ' *(:\w+:|[\p{Emoji_Presentation}\p{Extended_Pictographic}]\u{FE0F}?\u{200D}?) *', replace = "" },
+]
 commit_parsers = [
   { message = "^.*feat", group = "Features" },
   { message = "^.*fix", group = "Bug Fixes" },
