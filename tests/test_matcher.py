@@ -17,6 +17,38 @@ def test_matches_pattern_wildcard():
     assert matches_pattern("contexts.*.domain", "contexts.boards.application") is False
 
 
+def test_matches_pattern_double_star():
+    # matches one level
+    assert matches_pattern("contexts.**.domain", "contexts.analytics.domain") is True
+    # matches multiple levels
+    assert (
+        matches_pattern("contexts.**.domain", "contexts.analytics.sub.domain") is True
+    )
+    # does not match zero levels (** requires one or more)
+    assert matches_pattern("contexts.**.domain", "contexts.domain") is False
+    # does not match wrong suffix
+    assert (
+        matches_pattern("contexts.**.domain", "contexts.analytics.application") is False
+    )
+
+
+def test_matches_pattern_double_star_at_end():
+    assert (
+        matches_pattern("contexts.**.domain.**", "contexts.a.domain.entities") is True
+    )
+    assert (
+        matches_pattern("contexts.**.domain.**", "contexts.a.domain.entities.metric")
+        is True
+    )
+    assert matches_pattern("contexts.**.domain.**", "contexts.a.domain") is False
+
+
+def test_matches_pattern_double_star_alone():
+    # ** alone matches any module with one or more parts
+    assert matches_pattern("**", "anything") is True
+    assert matches_pattern("**", "a.b.c") is True
+
+
 def test_matches_pattern_wildcard_in_allow():
     assert matches_pattern("contexts.*.domain", "contexts.boards.domain") is True
 

@@ -6,17 +6,29 @@ from python_dependency_linter.config import AllowDeny, Rule
 def matches_pattern(pattern: str, module: str) -> bool:
     pattern_parts = pattern.split(".")
     module_parts = module.split(".")
+    return _match(pattern_parts, module_parts)
 
-    if len(pattern_parts) != len(module_parts):
+
+def _match(pattern_parts: list[str], module_parts: list[str]) -> bool:
+    if not pattern_parts and not module_parts:
+        return True
+    if not pattern_parts:
         return False
 
-    for p, m in zip(pattern_parts, module_parts):
-        if p == "*":
-            continue
-        if p != m:
-            return False
+    if pattern_parts[0] == "**":
+        # "**" matches one or more parts
+        for i in range(1, len(module_parts) + 1):
+            if _match(pattern_parts[1:], module_parts[i:]):
+                return True
+        return False
 
-    return True
+    if not module_parts:
+        return False
+
+    if pattern_parts[0] == "*" or pattern_parts[0] == module_parts[0]:
+        return _match(pattern_parts[1:], module_parts[1:])
+
+    return False
 
 
 def find_matching_rules(module: str, rules: list[Rule]) -> list[Rule]:
