@@ -34,6 +34,12 @@ Commit messages must follow [Conventional Commits](https://www.conventionalcommi
 ♻️ refactor: Simplify module resolver logic
 ```
 
+## Pull Request Convention
+
+- PRs are always **squash merged**, so the PR title becomes the final commit message.
+- PR titles must follow the same format as commit messages (`<gitmoji> <type>: <description>`).
+- PR descriptions must be written in **English**.
+
 ## Pre-commit Hooks
 
 This project uses [pre-commit](https://pre-commit.com/) with [ruff](https://docs.astral.sh/ruff/) for linting and formatting.
