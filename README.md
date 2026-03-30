@@ -255,6 +255,16 @@ Add to `.pre-commit-config.yaml`:
     - id: python-dependency-linter
 ```
 
+To pass custom options (e.g., a different config file or project root):
+
+```yaml
+- repo: https://github.com/heumsi/python-dependency-linter
+  rev: v0.1.0
+  hooks:
+    - id: python-dependency-linter
+      args: [--config, custom-config.yaml, --project-root, src]
+```
+
 ## License
 
 MIT
