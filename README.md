@@ -109,6 +109,23 @@ allow:
 modules: contexts.*.domain  # matches contexts.boards.domain, contexts.auth.domain, ...
 ```
 
+`**` matches one or more levels in dotted module paths:
+
+```yaml
+modules: contexts.**.domain  # matches contexts.boards.domain, contexts.boards.sub.domain, ...
+```
+
+### Submodule Matching
+
+When a pattern is used in `allow` or `deny`, it also matches submodules of the matched module. For example:
+
+```yaml
+allow:
+  local: [contexts.*.domain]
+```
+
+This allows imports of `contexts.boards.domain` as well as its submodules like `contexts.boards.domain.models` or `contexts.boards.domain.entities.metric`.
+
 ### Rule Merging
 
 When multiple rules match a module, they are merged. Specific rules override wildcard rules per field:
