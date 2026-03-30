@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-03-30
+
+### Features
+
+- Add named capture in module patterns for back-referencing in allow/deny (#17)
 ## [0.4.0] - 2026-03-30
 
 ### Bug Fixes
