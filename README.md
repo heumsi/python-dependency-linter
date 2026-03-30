@@ -92,7 +92,17 @@ Dependencies are classified into three categories (per PEP 8):
 - **`allow` only** — Whitelist mode. Only listed dependencies are allowed
 - **`deny` only** — Blacklist mode. Listed dependencies are denied, rest allowed
 - **`allow` + `deny`** — Allow first, then deny removes exceptions
-- If `allow` exists but a category is omitted, that category allows all
+- If `allow` exists but a category is omitted, that category allows all. For example:
+
+```yaml
+rules:
+  - name: domain-isolation
+    modules: contexts.*.domain
+    allow:
+      third_party: [pydantic]
+      local: [contexts.*.domain]
+      # standard_library is omitted → all standard library imports are allowed
+```
 
 Use `"*"` to allow all within a category:
 
