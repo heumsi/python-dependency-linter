@@ -1,6 +1,7 @@
 from python_dependency_linter.config import AllowDeny, Rule
 from python_dependency_linter.matcher import (
     find_matching_rules,
+    match_pattern_with_captures,
     matches_pattern,
     merge_rules,
 )
@@ -73,8 +74,8 @@ def test_find_matching_rules():
     ]
     matched = find_matching_rules("contexts.boards.domain", rules)
     assert len(matched) == 2
-    assert matched[0].name == "r1"
-    assert matched[1].name == "r2"
+    assert matched[0][0].name == "r1"
+    assert matched[1][0].name == "r2"
 
 
 def test_merge_rules_merges_allow():
@@ -117,3 +118,99 @@ def test_merge_rules_merges_deny():
     merged = merge_rules([rule1, rule2])
 
     assert sorted(merged.deny.third_party) == ["boto3", "requests"]
+
+
+def test_capture_single():
+    result = match_pattern_with_captures(
+        "src.contexts.{context}.domain", "src.contexts.analytics.domain"
+    )
+    assert result == {"context": "analytics"}
+
+
+def test_capture_multiple():
+    result = match_pattern_with_captures(
+        "src.contexts.{ctx}.adapters.{dir}", "src.contexts.auth.adapters.inbound"
+    )
+    assert result == {"ctx": "auth", "dir": "inbound"}
+
+
+def test_capture_duplicate_name_consistent():
+    result = match_pattern_with_captures("src.{a}.middle.{a}", "src.foo.middle.foo")
+    assert result == {"a": "foo"}
+
+
+def test_capture_duplicate_name_inconsistent():
+    result = match_pattern_with_captures("src.{a}.middle.{a}", "src.foo.middle.bar")
+    assert result is None
+
+
+def test_capture_no_match():
+    result = match_pattern_with_captures(
+        "src.contexts.{context}.domain", "src.utils.helpers"
+    )
+    assert result is None
+
+
+def test_capture_no_captures_with_star():
+    result = match_pattern_with_captures("src.*.domain", "src.analytics.domain")
+    assert result == {}
+
+
+def test_capture_coexist_with_star():
+    result = match_pattern_with_captures(
+        "src.{ctx}.*.domain", "src.auth.adapters.domain"
+    )
+    assert result == {"ctx": "auth"}
+
+
+def test_capture_coexist_with_double_star():
+    result = match_pattern_with_captures(
+        "src.{ctx}.**.domain", "src.auth.deep.nested.domain"
+    )
+    assert result == {"ctx": "auth"}
+
+
+def test_capture_exact_no_wildcards():
+    result = match_pattern_with_captures(
+        "src.contexts.analytics.domain", "src.contexts.analytics.domain"
+    )
+    assert result == {}
+
+
+def test_capture_exact_no_wildcards_no_match():
+    result = match_pattern_with_captures(
+        "src.contexts.analytics.domain", "src.contexts.auth.domain"
+    )
+    assert result is None
+
+
+def test_find_matching_rules_with_captures():
+    rules = [
+        Rule(
+            name="domain-layer",
+            modules="contexts.{context}.domain",
+            allow=AllowDeny(local=["contexts.{context}.domain"]),
+        ),
+        Rule(
+            name="adapters",
+            modules="contexts.*.adapters",
+            deny=AllowDeny(third_party=["boto3"]),
+        ),
+    ]
+    matched = find_matching_rules("contexts.boards.domain", rules)
+    assert len(matched) == 1
+    rule, captures = matched[0]
+    assert rule.name == "domain-layer"
+    assert captures == {"context": "boards"}
+
+
+def test_capture_after_double_star():
+    result = match_pattern_with_captures(
+        "src.**.{layer}.models", "src.deep.nested.domain.models"
+    )
+    assert result == {"layer": "domain"}
+
+
+def test_capture_after_double_star_backtrack():
+    result = match_pattern_with_captures("**.{x}.end", "a.b.c.end")
+    assert result == {"x": "c"}

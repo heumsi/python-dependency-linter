@@ -1,38 +1,73 @@
 from __future__ import annotations
 
+import re
+
 from python_dependency_linter.config import AllowDeny, Rule
+
+_CAPTURE_RE = re.compile(r"^\{(\w+)\}$")
 
 
 def matches_pattern(pattern: str, module: str) -> bool:
+    return match_pattern_with_captures(pattern, module) is not None
+
+
+def match_pattern_with_captures(pattern: str, module: str) -> dict[str, str] | None:
     pattern_parts = pattern.split(".")
     module_parts = module.split(".")
-    return _match(pattern_parts, module_parts)
+    captures: dict[str, str] = {}
+    if _match_with_captures(pattern_parts, module_parts, captures):
+        return captures
+    return None
 
 
-def _match(pattern_parts: list[str], module_parts: list[str]) -> bool:
+def _match_with_captures(
+    pattern_parts: list[str],
+    module_parts: list[str],
+    captures: dict[str, str],
+) -> bool:
     if not pattern_parts and not module_parts:
         return True
     if not pattern_parts:
         return False
 
     if pattern_parts[0] == "**":
-        # "**" matches one or more parts
         for i in range(1, len(module_parts) + 1):
-            if _match(pattern_parts[1:], module_parts[i:]):
+            snapshot = dict(captures)
+            if _match_with_captures(pattern_parts[1:], module_parts[i:], captures):
                 return True
+            captures.clear()
+            captures.update(snapshot)
         return False
 
     if not module_parts:
         return False
 
+    m = _CAPTURE_RE.match(pattern_parts[0])
+    if m:
+        name = m.group(1)
+        value = module_parts[0]
+        if name in captures:
+            if captures[name] != value:
+                return False
+        else:
+            captures[name] = value
+        return _match_with_captures(pattern_parts[1:], module_parts[1:], captures)
+
     if pattern_parts[0] == "*" or pattern_parts[0] == module_parts[0]:
-        return _match(pattern_parts[1:], module_parts[1:])
+        return _match_with_captures(pattern_parts[1:], module_parts[1:], captures)
 
     return False
 
 
-def find_matching_rules(module: str, rules: list[Rule]) -> list[Rule]:
-    return [r for r in rules if matches_pattern(r.modules, module)]
+def find_matching_rules(
+    module: str, rules: list[Rule]
+) -> list[tuple[Rule, dict[str, str]]]:
+    result = []
+    for r in rules:
+        captures = match_pattern_with_captures(r.modules, module)
+        if captures is not None:
+            result.append((r, captures))
+    return result
 
 
 def _merge_allow_deny(
