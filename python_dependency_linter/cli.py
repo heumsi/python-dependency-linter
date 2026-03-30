@@ -5,7 +5,7 @@ from pathlib import Path
 import click
 
 from python_dependency_linter.checker import check_import
-from python_dependency_linter.config import load_config
+from python_dependency_linter.config import find_config, load_config
 from python_dependency_linter.matcher import find_matching_rules, merge_rules
 from python_dependency_linter.parser import parse_imports
 from python_dependency_linter.reporter import format_violations
@@ -84,19 +84,29 @@ def main():
 @click.option(
     "--config",
     "config_path",
-    default=".python-dependency-linter.yaml",
+    default=None,
     help="Path to config file.",
 )
-@click.option("--project-root", default=".", help="Project root directory.")
-def check(config_path: str, project_root: str):
-    root = Path(project_root).resolve()
-    config_file = Path(config_path)
+def check(config_path: str | None):
+    if config_path is not None:
+        config_file = Path(config_path)
+        if not config_file.exists():
+            click.echo(f"Error: Config file not found: {config_file}", err=True)
+            raise SystemExit(2)
+        root = config_file.resolve().parent
+    else:
+        config_file = find_config()
+        if config_file is None:
+            click.echo(
+                "Error: Config file not found. "
+                "Create .python-dependency-linter.yaml or configure "
+                "[tool.python-dependency-linter] in pyproject.toml.",
+                err=True,
+            )
+            raise SystemExit(2)
+        root = config_file.resolve().parent
 
-    try:
-        config = load_config(config_file)
-    except FileNotFoundError as e:
-        click.echo(f"Error: {e}", err=True)
-        raise SystemExit(2)
+    config = load_config(config_file)
 
     all_violations = []
     python_files = _find_python_files(root, config.include, config.exclude)
