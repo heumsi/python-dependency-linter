@@ -82,6 +82,7 @@ commit_preprocessors = [
   { pattern = ' *(:\w+:|[\p{Emoji_Presentation}\p{Extended_Pictographic}]\u{FE0F}?\u{200D}?) *', replace = "" },
 ]
 commit_parsers = [
+  { message = "^.*Update CHANGELOG", skip = true },
   { message = "^.*feat", group = "Features" },
   { message = "^.*fix", group = "Bug Fixes" },
   { message = "^.*refactor", group = "Refactor" },
