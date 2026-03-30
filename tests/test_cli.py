@@ -167,6 +167,13 @@ def test_cli_check_config_not_found(tmp_path, monkeypatch):
     assert result.exit_code == 2
 
 
+def test_cli_check_explicit_config_not_found():
+    runner = CliRunner()
+    result = runner.invoke(main, ["check", "--config", "nonexistent.yaml"])
+    assert result.exit_code == 2
+    assert "not found" in result.output.lower()
+
+
 def test_cli_check_with_explicit_config(tmp_path, monkeypatch):
     """--config should use the config file's parent as project root."""
     project_dir = tmp_path / "project"
