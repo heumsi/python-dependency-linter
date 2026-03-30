@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2026-03-30
+
+### Bug Fixes
+
+- Match submodules in modules pattern consistent with allow/deny (#19)
+
+### Documentation
+
+- Replace hardcoded pre-commit rev with placeholder
+- Update submodule matching section to include modules pattern
 ## [0.5.0] - 2026-03-30
 
 ### Features
