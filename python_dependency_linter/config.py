@@ -57,7 +57,10 @@ def _load_yaml(path: Path) -> Config:
 
 
 def _load_pyproject_toml(path: Path) -> Config:
-    import tomllib
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[no-redef]
 
     with open(path, "rb") as f:
         data = tomllib.load(f)
