@@ -214,3 +214,62 @@ def test_capture_after_double_star():
 def test_capture_after_double_star_backtrack():
     result = match_pattern_with_captures("**.{x}.end", "a.b.c.end")
     assert result == {"x": "c"}
+
+
+def test_find_matching_rules_submodule():
+    """modules pattern should match submodules automatically."""
+    rules = [
+        Rule(
+            name="domain-layer",
+            modules="contexts.*.domain",
+            allow=AllowDeny(local=["contexts.*.domain"]),
+        ),
+    ]
+    # Exact match still works
+    matched = find_matching_rules("contexts.boards.domain", rules)
+    assert len(matched) == 1
+    assert matched[0][0].name == "domain-layer"
+
+    # Submodule should also match
+    matched = find_matching_rules("contexts.boards.domain.models", rules)
+    assert len(matched) == 1
+    assert matched[0][0].name == "domain-layer"
+
+    # Deeper submodule should also match
+    matched = find_matching_rules("contexts.boards.domain.entities.metric", rules)
+    assert len(matched) == 1
+    assert matched[0][0].name == "domain-layer"
+
+    # Non-matching module should not match
+    matched = find_matching_rules("contexts.boards.application.service", rules)
+    assert len(matched) == 0
+
+
+def test_find_matching_rules_submodule_with_captures():
+    """modules submodule matching should preserve captures."""
+    rules = [
+        Rule(
+            name="domain-layer",
+            modules="contexts.{context}.domain",
+            allow=AllowDeny(local=["contexts.{context}.domain"]),
+        ),
+    ]
+    matched = find_matching_rules("contexts.boards.domain.models", rules)
+    assert len(matched) == 1
+    rule, captures = matched[0]
+    assert rule.name == "domain-layer"
+    assert captures == {"context": "boards"}
+
+
+def test_find_matching_rules_submodule_exact_pattern():
+    """Exact (no wildcard) modules pattern should also match submodules."""
+    rules = [
+        Rule(
+            name="shared",
+            modules="src.shared.domain",
+            allow=AllowDeny(local=["src.shared.domain"]),
+        ),
+    ]
+    matched = find_matching_rules("src.shared.domain.entity.user", rules)
+    assert len(matched) == 1
+    assert matched[0][0].name == "shared"
