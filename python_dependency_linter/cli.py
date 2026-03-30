@@ -115,17 +115,19 @@ def check(config_path: str | None):
     for file_path in python_files:
         module = _file_to_module(file_path, root)
         package = _package_module(file_path, root)
-        matching_rules = find_matching_rules(package, config.rules)
-        if not matching_rules:
+        matching = find_matching_rules(package, config.rules)
+        if not matching:
             continue
 
-        merged_rule = merge_rules([r for r, _ in matching_rules])
+        matching_rules = [r for r, _ in matching]
+        captures = matching[0][1]
+        merged_rule = merge_rules(matching_rules)
         imports = parse_imports(file_path, root)
 
         file_violations = []
         for imp in imports:
             category = resolve_import(imp.module, root)
-            violation = check_import(imp, category, merged_rule, module)
+            violation = check_import(imp, category, merged_rule, module, captures)
             if violation is not None:
                 file_violations.append(violation)
 
