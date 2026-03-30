@@ -24,6 +24,8 @@ class Rule:
 @dataclass
 class Config:
     rules: list[Rule]
+    include: list[str] | None = None
+    exclude: list[str] | None = None
 
 
 def _parse_allow_deny(data: dict | None) -> AllowDeny | None:
@@ -53,7 +55,11 @@ def _parse_rules(rules_data: list[dict]) -> list[Rule]:
 def _load_yaml(path: Path) -> Config:
     with open(path) as f:
         data = yaml.safe_load(f)
-    return Config(rules=_parse_rules(data["rules"]))
+    return Config(
+        rules=_parse_rules(data["rules"]),
+        include=data.get("include"),
+        exclude=data.get("exclude"),
+    )
 
 
 def _load_pyproject_toml(path: Path) -> Config:
@@ -65,7 +71,11 @@ def _load_pyproject_toml(path: Path) -> Config:
     with open(path, "rb") as f:
         data = tomllib.load(f)
     tool_config = data["tool"]["python-dependency-linter"]
-    return Config(rules=_parse_rules(tool_config["rules"]))
+    return Config(
+        rules=_parse_rules(tool_config["rules"]),
+        include=tool_config.get("include"),
+        exclude=tool_config.get("exclude"),
+    )
 
 
 def load_config(path: Path) -> Config:

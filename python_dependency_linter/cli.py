@@ -36,8 +36,43 @@ def _package_module(file_path: Path, project_root: Path) -> str:
     return ".".join(parts)
 
 
-def _find_python_files(project_root: Path) -> list[Path]:
-    return sorted(project_root.rglob("*.py"))
+def _normalize_pattern(pattern: str, project_root: Path) -> str:
+    """Normalize a pattern so that bare directory names match all files within."""
+    clean = pattern.rstrip("/")
+    candidate = project_root / clean
+    if candidate.is_dir() or not any(c in clean for c in ("*", "?")):
+        clean = f"{clean}/**"
+    return clean
+
+
+def _matches_any(path: Path, patterns: list[str]) -> bool:
+    return any(path.match(p) for p in patterns)
+
+
+def _find_python_files(
+    project_root: Path,
+    include: list[str] | None = None,
+    exclude: list[str] | None = None,
+) -> list[Path]:
+    all_files = sorted(project_root.rglob("*.py"))
+
+    if include is not None:
+        normalized = [_normalize_pattern(p, project_root) for p in include]
+        all_files = [
+            f
+            for f in all_files
+            if _matches_any(f.relative_to(project_root), normalized)
+        ]
+
+    if exclude is not None:
+        normalized = [_normalize_pattern(p, project_root) for p in exclude]
+        all_files = [
+            f
+            for f in all_files
+            if not _matches_any(f.relative_to(project_root), normalized)
+        ]
+
+    return all_files
 
 
 @click.group()
@@ -64,7 +99,7 @@ def check(config_path: str, project_root: str):
         raise SystemExit(2)
 
     all_violations = []
-    python_files = _find_python_files(root)
+    python_files = _find_python_files(root, config.include, config.exclude)
 
     for file_path in python_files:
         module = _file_to_module(file_path, root)

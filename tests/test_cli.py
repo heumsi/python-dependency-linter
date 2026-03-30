@@ -63,6 +63,108 @@ rules:
     assert "No violations found." in result.output
 
 
+def test_cli_check_with_include(tmp_path):
+    """Files outside include paths should be skipped."""
+    config_content = """\
+include:
+  - src
+rules:
+  - name: domain-isolation
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+
+    # Create files inside and outside include path
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text("import pydantic\n")
+
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "__init__.py").write_text("")
+    (other / "app.py").write_text("import pydantic\n")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        main, ["check", "--config", str(config_file), "--project-root", str(tmp_path)]
+    )
+    assert result.exit_code == 1
+    assert "src/app.py" in result.output
+    assert "other/app.py" not in result.output
+
+
+def test_cli_check_with_exclude(tmp_path):
+    """Files matching exclude patterns should be skipped."""
+    config_content = """\
+exclude:
+  - generated/**
+rules:
+  - name: domain-isolation
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text("import pydantic\n")
+
+    generated = tmp_path / "generated"
+    generated.mkdir()
+    (generated / "__init__.py").write_text("")
+    (generated / "models.py").write_text("import pydantic\n")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        main, ["check", "--config", str(config_file), "--project-root", str(tmp_path)]
+    )
+    assert result.exit_code == 1
+    assert "src/app.py" in result.output
+    assert "generated/" not in result.output
+
+
+def test_cli_check_with_include_and_exclude(tmp_path):
+    """Exclude should filter within included paths."""
+    config_content = """\
+include:
+  - src
+exclude:
+  - src/generated
+rules:
+  - name: domain-isolation
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+
+    app = tmp_path / "src"
+    app.mkdir()
+    (app / "__init__.py").write_text("")
+    (app / "app.py").write_text("import pydantic\n")
+
+    generated = tmp_path / "src" / "generated"
+    generated.mkdir()
+    (generated / "__init__.py").write_text("")
+    (generated / "models.py").write_text("import pydantic\n")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        main, ["check", "--config", str(config_file), "--project-root", str(tmp_path)]
+    )
+    assert result.exit_code == 1
+    assert "src/app.py" in result.output
+    assert "generated/" not in result.output
+
+
 def test_cli_check_config_not_found():
     runner = CliRunner()
     result = runner.invoke(main, ["check", "--config", "nonexistent.yaml"])

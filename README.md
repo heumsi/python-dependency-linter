@@ -123,6 +123,35 @@ rules:
 
 ## Configuration
 
+### Include / Exclude
+
+Control which files are scanned using `include` and `exclude`:
+
+```yaml
+include:
+  - src
+exclude:
+  - src/generated/**
+
+rules:
+  - name: ...
+```
+
+- **No `include` or `exclude`** — All `.py` files under the project root are scanned
+- **`include` only** — Only files matching the given paths are scanned
+- **`exclude` only** — All files except those matching the given paths are scanned
+- **Both** — `include` is applied first, then `exclude` filters within that result
+
+Bare directory names (e.g., `src`) and trailing-slash forms (e.g., `src/`) are treated the same as `src/**`.
+
+In `pyproject.toml`:
+
+```toml
+[tool.python-dependency-linter]
+include = ["src"]
+exclude = ["src/generated/**"]
+```
+
 ### Rule Structure
 
 Each rule has:

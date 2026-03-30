@@ -36,6 +36,46 @@ def test_load_pyproject_toml():
     assert rule.allow.standard_library == ["dataclasses", "typing"]
 
 
+def test_load_yaml_config_with_include_exclude(tmp_path):
+    config_content = """\
+include:
+  - src/**
+exclude:
+  - src/generated/**
+rules:
+  - name: test
+    modules: src.*
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert config.include == ["src/**"]
+    assert config.exclude == ["src/generated/**"]
+
+
+def test_load_yaml_config_without_include_exclude():
+    config = load_config(FIXTURES / "sample_config.yaml")
+    assert config.include is None
+    assert config.exclude is None
+
+
+def test_load_pyproject_toml_with_include_exclude(tmp_path):
+    config_content = """\
+[tool.python-dependency-linter]
+include = ["src/**"]
+exclude = ["src/generated/**"]
+
+[[tool.python-dependency-linter.rules]]
+name = "test"
+modules = "src.*"
+"""
+    config_file = tmp_path / "pyproject.toml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert config.include == ["src/**"]
+    assert config.exclude == ["src/generated/**"]
+
+
 def test_load_config_file_not_found():
     import pytest
 
