@@ -53,3 +53,32 @@ pre-commit run --all-files
 ```
 
 All commits must pass the pre-commit hooks before being accepted.
+
+## Release
+
+Releases are automated via GitHub Actions. You only need to create and push a version tag.
+
+### Steps
+
+1. Calculate the next version based on conventional commits:
+   ```bash
+   uvx git-cliff --bumped-version
+   ```
+2. Review the commits since the last tag:
+   ```bash
+   git log $(git describe --tags --abbrev=0)..HEAD --oneline
+   ```
+3. Push the latest commits to `main`:
+   ```bash
+   git push origin main
+   ```
+4. Create and push the tag:
+   ```bash
+   git tag <version>
+   git push origin <version>
+   ```
+
+The GitHub Actions workflow will then automatically:
+- Generate `CHANGELOG.md` and commit it to `main`
+- Create a GitHub Release with release notes
+- Publish the package to PyPI
