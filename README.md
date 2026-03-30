@@ -258,14 +258,19 @@ Named captures coexist with `*` and `**` wildcards. `{name}` always matches exac
 
 ### Submodule Matching
 
-When a pattern is used in `allow` or `deny`, it also matches submodules of the matched module. For example:
+When a pattern is used in `modules`, `allow`, or `deny`, it also matches submodules of the matched module.
+
+For example, the following rule applies to `contexts.boards.domain` as well as its submodules like `contexts.boards.domain.models` or `contexts.boards.domain.entities.metric`:
 
 ```yaml
-allow:
-  local: [contexts.*.domain]
+rules:
+  - name: domain-layer
+    modules: contexts.*.domain
+    allow:
+      local: [contexts.*.domain]
 ```
 
-This allows imports of `contexts.boards.domain` as well as its submodules like `contexts.boards.domain.models` or `contexts.boards.domain.entities.metric`.
+> **Note:** `contexts.*.domain` matches the module itself (`__init__.py`) **and** all submodules beneath it, while `contexts.*.domain.**` matches submodules only.
 
 ### Rule Merging
 
