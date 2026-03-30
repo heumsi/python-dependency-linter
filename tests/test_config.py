@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from python_dependency_linter.config import load_config
+from python_dependency_linter.config import find_config, load_config
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -81,3 +81,46 @@ def test_load_config_file_not_found():
 
     with pytest.raises(FileNotFoundError):
         load_config(Path("nonexistent.yaml"))
+
+
+def test_find_config_yaml_in_cwd(tmp_path, monkeypatch):
+    (tmp_path / ".python-dependency-linter.yaml").write_text("rules: []\n")
+    monkeypatch.chdir(tmp_path)
+    assert find_config() == tmp_path / ".python-dependency-linter.yaml"
+
+
+def test_find_config_yaml_in_parent(tmp_path, monkeypatch):
+    (tmp_path / ".python-dependency-linter.yaml").write_text("rules: []\n")
+    child = tmp_path / "sub"
+    child.mkdir()
+    monkeypatch.chdir(child)
+    assert find_config() == tmp_path / ".python-dependency-linter.yaml"
+
+
+def test_find_config_pyproject_toml(tmp_path, monkeypatch):
+    toml_content = "[tool.python-dependency-linter]\nrules = []\n"
+    (tmp_path / "pyproject.toml").write_text(toml_content)
+    monkeypatch.chdir(tmp_path)
+    assert find_config() == tmp_path / "pyproject.toml"
+
+
+def test_find_config_yaml_preferred_over_toml(tmp_path, monkeypatch):
+    """When both exist in the same directory, YAML wins."""
+    (tmp_path / ".python-dependency-linter.yaml").write_text("rules: []\n")
+    toml_content = "[tool.python-dependency-linter]\nrules = []\n"
+    (tmp_path / "pyproject.toml").write_text(toml_content)
+    monkeypatch.chdir(tmp_path)
+    assert find_config() == tmp_path / ".python-dependency-linter.yaml"
+
+
+def test_find_config_not_found(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    result = find_config()
+    assert result is None
+
+
+def test_find_config_skips_pyproject_without_section(tmp_path, monkeypatch):
+    """pyproject.toml without [tool.python-dependency-linter] should be skipped."""
+    (tmp_path / "pyproject.toml").write_text("[tool.other]\nfoo = 1\n")
+    monkeypatch.chdir(tmp_path)
+    assert find_config() is None
