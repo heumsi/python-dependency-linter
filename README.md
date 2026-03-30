@@ -2,6 +2,14 @@
 
 A dependency linter for Python projects. Define rules for which modules can depend on what, and catch violations.
 
+## What It Does
+
+- Define dependency rules between modules using a simple YAML or TOML config
+- Detect imports that violate your rules with a single CLI command
+- Integrate into CI or pre-commit to keep your architecture consistent
+
+For Python developers who care about module boundaries and dependency direction — whether you're applying Layered, Hexagonal, Clean Architecture, or your own conventions.
+
 ## Installation
 
 ```bash
