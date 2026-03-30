@@ -59,12 +59,31 @@ def _match_with_captures(
     return False
 
 
+def match_pattern_with_captures_or_submodule(
+    pattern: str, module: str
+) -> dict[str, str] | None:
+    """Match pattern exactly or treat module as a submodule of the pattern."""
+    captures = match_pattern_with_captures(pattern, module)
+    if captures is not None:
+        return captures
+    # Check if a prefix of the module matches the pattern.
+    # e.g. "contexts.*.domain" should match "contexts.boards.domain.models"
+    module_parts = module.split(".")
+    pattern_parts = pattern.split(".")
+    if len(module_parts) > len(pattern_parts):
+        prefix = ".".join(module_parts[: len(pattern_parts)])
+        captures = match_pattern_with_captures(pattern, prefix)
+        if captures is not None:
+            return captures
+    return None
+
+
 def find_matching_rules(
     module: str, rules: list[Rule]
 ) -> list[tuple[Rule, dict[str, str]]]:
     result = []
     for r in rules:
-        captures = match_pattern_with_captures(r.modules, module)
+        captures = match_pattern_with_captures_or_submodule(r.modules, module)
         if captures is not None:
             result.append((r, captures))
     return result
