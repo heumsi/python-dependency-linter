@@ -284,14 +284,11 @@ third_party = ["boto3"]
 ## CLI
 
 ```bash
-# Check with default config (.python-dependency-linter.yaml)
+# Check with auto-discovered config (searches upward from cwd)
 pdl check
 
-# Specify config file
+# Specify config file (project root = config file's parent directory)
 pdl check --config path/to/config.yaml
-
-# Specify project root
-pdl check --project-root path/to/project
 ```
 
 Exit codes:
@@ -300,10 +297,10 @@ Exit codes:
 - `1` — Violations found
 - `2` — Config file not found
 
-If no `--config` is given, the tool looks for `.python-dependency-linter.yaml` in the current directory. If the config file does not exist, the tool prints an error and exits with code `2`:
+If no `--config` is given, the tool searches upward from the current directory for `.python-dependency-linter.yaml` or `pyproject.toml` (with `[tool.python-dependency-linter]`). The config file's parent directory is used as the project root. If no config file is found, the tool prints an error and exits with code `2`:
 
 ```
-Error: Config file not found: .python-dependency-linter.yaml
+Error: Config file not found. Create .python-dependency-linter.yaml or configure [tool.python-dependency-linter] in pyproject.toml.
 ```
 
 ## Pre-commit
@@ -317,14 +314,14 @@ Add to `.pre-commit-config.yaml`:
     - id: python-dependency-linter
 ```
 
-To pass custom options (e.g., a different config file or project root):
+To pass custom options (e.g., a different config file):
 
 ```yaml
 - repo: https://github.com/heumsi/python-dependency-linter
   rev: v0.1.0
   hooks:
     - id: python-dependency-linter
-      args: [--config, custom-config.yaml, --project-root, src]
+      args: [--config, custom-config.yaml]
 ```
 
 ## License
