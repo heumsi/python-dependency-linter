@@ -61,7 +61,7 @@ def check(config_path: str, project_root: str):
         config = load_config(config_file)
     except FileNotFoundError as e:
         click.echo(f"Error: {e}", err=True)
-        raise SystemExit(1)
+        raise SystemExit(2)
 
     all_violations = []
     python_files = _find_python_files(root)
