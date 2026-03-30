@@ -94,6 +94,43 @@ rules:
     assert "other/app.py" not in result.output
 
 
+def test_cli_check_with_include_nested(tmp_path, monkeypatch):
+    """Include should match files in deeply nested subdirectories."""
+    config_content = """\
+include:
+  - src
+rules:
+  - name: domain-isolation
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / ".python-dependency-linter.yaml"
+    config_file.write_text(config_content)
+
+    # Create deeply nested files inside include path
+    nested = tmp_path / "src" / "contexts" / "analytics" / "domain"
+    nested.mkdir(parents=True)
+    (tmp_path / "src" / "__init__.py").write_text("")
+    (tmp_path / "src" / "contexts" / "__init__.py").write_text("")
+    (tmp_path / "src" / "contexts" / "analytics" / "__init__.py").write_text("")
+    (nested / "__init__.py").write_text("")
+    (nested / "models.py").write_text("import pydantic\n")
+
+    # Create files outside include path
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "__init__.py").write_text("")
+    (other / "app.py").write_text("import pydantic\n")
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["check"])
+    assert result.exit_code == 1
+    assert "src/contexts/analytics/domain/models.py" in result.output
+    assert "other/app.py" not in result.output
+
+
 def test_cli_check_with_exclude(tmp_path, monkeypatch):
     """Files matching exclude patterns should be skipped."""
     config_content = """\
