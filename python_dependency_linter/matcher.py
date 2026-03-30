@@ -59,8 +59,15 @@ def _match_with_captures(
     return False
 
 
-def find_matching_rules(module: str, rules: list[Rule]) -> list[Rule]:
-    return [r for r in rules if matches_pattern(r.modules, module)]
+def find_matching_rules(
+    module: str, rules: list[Rule]
+) -> list[tuple[Rule, dict[str, str]]]:
+    result = []
+    for r in rules:
+        captures = match_pattern_with_captures(r.modules, module)
+        if captures is not None:
+            result.append((r, captures))
+    return result
 
 
 def _merge_allow_deny(

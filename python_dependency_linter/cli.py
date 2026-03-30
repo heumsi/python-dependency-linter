@@ -119,7 +119,7 @@ def check(config_path: str | None):
         if not matching_rules:
             continue
 
-        merged_rule = merge_rules(matching_rules)
+        merged_rule = merge_rules([r for r, _ in matching_rules])
         imports = parse_imports(file_path, root)
 
         file_violations = []

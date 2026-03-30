@@ -74,8 +74,8 @@ def test_find_matching_rules():
     ]
     matched = find_matching_rules("contexts.boards.domain", rules)
     assert len(matched) == 2
-    assert matched[0].name == "r1"
-    assert matched[1].name == "r2"
+    assert matched[0][0].name == "r1"
+    assert matched[1][0].name == "r2"
 
 
 def test_merge_rules_merges_allow():
@@ -182,3 +182,35 @@ def test_capture_exact_no_wildcards_no_match():
         "src.contexts.analytics.domain", "src.contexts.auth.domain"
     )
     assert result is None
+
+
+def test_find_matching_rules_with_captures():
+    rules = [
+        Rule(
+            name="domain-layer",
+            modules="contexts.{context}.domain",
+            allow=AllowDeny(local=["contexts.{context}.domain"]),
+        ),
+        Rule(
+            name="adapters",
+            modules="contexts.*.adapters",
+            deny=AllowDeny(third_party=["boto3"]),
+        ),
+    ]
+    matched = find_matching_rules("contexts.boards.domain", rules)
+    assert len(matched) == 1
+    rule, captures = matched[0]
+    assert rule.name == "domain-layer"
+    assert captures == {"context": "boards"}
+
+
+def test_capture_after_double_star():
+    result = match_pattern_with_captures(
+        "src.**.{layer}.models", "src.deep.nested.domain.models"
+    )
+    assert result == {"layer": "domain"}
+
+
+def test_capture_after_double_star_backtrack():
+    result = match_pattern_with_captures("**.{x}.end", "a.b.c.end")
+    assert result == {"x": "c"}
