@@ -224,6 +224,22 @@ modules = "contexts.*.domain"
 standard_library = ["dataclasses", "typing"]
 third_party = ["pydantic"]
 local = ["contexts.*.domain"]
+
+[[tool.python-dependency-linter.rules]]
+name = "application-dependency"
+modules = "contexts.*.application"
+
+[tool.python-dependency-linter.rules.allow]
+standard_library = ["*"]
+third_party = ["pydantic"]
+local = ["contexts.*.application", "contexts.*.domain"]
+
+[[tool.python-dependency-linter.rules]]
+name = "no-boto-in-domain"
+modules = "contexts.*.domain"
+
+[tool.python-dependency-linter.rules.deny]
+third_party = ["boto3"]
 ```
 
 ## CLI
