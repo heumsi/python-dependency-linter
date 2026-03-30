@@ -55,6 +55,64 @@ contexts/boards/domain/models.py:9
 Found 2 violation(s).
 ```
 
+## Examples
+
+### Layered Architecture
+
+Enforce dependency direction: `presentation → application → domain`, where `domain` has no outward dependencies.
+
+```yaml
+rules:
+  - name: domain-isolation
+    modules: my_app.domain
+    allow:
+      standard_library: ["*"]
+      third_party: []
+      local: [my_app.domain]
+
+  - name: application-layer
+    modules: my_app.application
+    allow:
+      standard_library: ["*"]
+      third_party: [pydantic]
+      local:
+        - my_app.application
+        - my_app.domain
+
+  - name: presentation-layer
+    modules: my_app.presentation
+    allow:
+      standard_library: ["*"]
+      third_party: [fastapi, pydantic]
+      local:
+        - my_app.presentation
+        - my_app.application
+        - my_app.domain
+```
+
+### Hexagonal Architecture
+
+Isolate domain from infrastructure. Ports (interfaces) live in domain, adapters depend on domain but not vice versa.
+
+```yaml
+rules:
+  - name: domain-no-infra
+    modules: contexts.*.domain
+    allow:
+      standard_library: [dataclasses, typing, abc]
+      third_party: []
+      local: [contexts.*.domain]
+
+  - name: adapters-depend-on-domain
+    modules: contexts.*.adapters
+    allow:
+      standard_library: ["*"]
+      third_party: ["*"]
+      local:
+        - contexts.*.adapters
+        - contexts.*.domain
+```
+
 ## Configuration
 
 ### Rule Structure
