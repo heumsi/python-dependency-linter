@@ -1,0 +1,6 @@
+- id: python-dependency-linter
+  name: Python Dependency Linter
+  entry: pdl check
+  language: python
+  types: [python]
+  pass_filenames: false
