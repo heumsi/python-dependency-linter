@@ -1,4 +1,4 @@
-from python_dependency_linter.checker import Violation, check_import
+from python_dependency_linter.checker import Violation, check_import, resolve_captures
 from python_dependency_linter.config import AllowDeny, Rule
 from python_dependency_linter.parser import ImportInfo
 from python_dependency_linter.resolver import ImportCategory
@@ -146,6 +146,79 @@ def test_no_allow_for_category_means_allow_all():
     result = check_import(
         import_info=ImportInfo(module="os", lineno=1),
         category=ImportCategory.STANDARD_LIBRARY,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert result is None
+
+
+def test_resolve_captures_single():
+    result = resolve_captures("src.contexts.{context}.domain", {"context": "analytics"})
+    assert result == "src.contexts.analytics.domain"
+
+
+def test_resolve_captures_multiple():
+    result = resolve_captures(
+        "src.{ctx}.adapters.{dir}", {"ctx": "auth", "dir": "inbound"}
+    )
+    assert result == "src.auth.adapters.inbound"
+
+
+def test_resolve_captures_no_placeholders():
+    result = resolve_captures("src.shared.domain", {"context": "analytics"})
+    assert result == "src.shared.domain"
+
+
+def test_resolve_captures_unresolved_placeholder():
+    result = resolve_captures("src.{unknown}.domain", {"context": "analytics"})
+    assert result == "src.{unknown}.domain"
+
+
+def test_cross_context_isolation_allowed():
+    """Same context's domain import should be allowed."""
+    rule = Rule(
+        name="domain-layer",
+        modules="contexts.{context}.domain",
+        allow=AllowDeny(local=["contexts.{context}.domain", "shared.domain"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="contexts.boards.domain.models", lineno=1),
+        category=ImportCategory.LOCAL,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+        captures={"context": "boards"},
+    )
+    assert result is None
+
+
+def test_cross_context_isolation_violation():
+    """Different context's domain import should be denied."""
+    rule = Rule(
+        name="domain-layer",
+        modules="contexts.{context}.domain",
+        allow=AllowDeny(local=["contexts.{context}.domain", "shared.domain"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="contexts.auth.domain.models", lineno=5),
+        category=ImportCategory.LOCAL,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+        captures={"context": "boards"},
+    )
+    assert isinstance(result, Violation)
+    assert result.imported_module == "contexts.auth.domain.models"
+
+
+def test_check_import_no_captures_backward_compat():
+    """Existing behavior works when no captures provided."""
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        allow=AllowDeny(third_party=["pydantic"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="pydantic", lineno=1),
+        category=ImportCategory.THIRD_PARTY,
         merged_rule=rule,
         source_module="contexts.boards.domain",
     )
