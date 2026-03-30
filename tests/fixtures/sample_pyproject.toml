@@ -1,0 +1,10 @@
+[tool.python-dependency-linter]
+
+[[tool.python-dependency-linter.rules]]
+name = "domain-isolation"
+modules = "contexts.*.domain"
+
+[tool.python-dependency-linter.rules.allow]
+standard_library = ["dataclasses", "typing"]
+third_party = ["pydantic"]
+local = ["contexts.*.domain"]

@@ -1,0 +1,12 @@
+rules:
+  - name: domain-isolation
+    modules: contexts.*.domain
+    allow:
+      standard_library: [dataclasses, typing]
+      third_party: [pydantic]
+      local: [contexts.*.domain]
+
+  - name: adapters-deny-boto
+    modules: contexts.*.adapters
+    deny:
+      third_party: [boto3]
