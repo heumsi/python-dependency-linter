@@ -120,7 +120,9 @@ def check(config_path: str | None):
             continue
 
         matching_rules = [r for r, _ in matching]
-        captures = matching[0][1]
+        captures: dict[str, str] = {}
+        for _, c in matching:
+            captures.update(c)
         merged_rule = merge_rules(matching_rules)
         imports = parse_imports(file_path, root)
 
