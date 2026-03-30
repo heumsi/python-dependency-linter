@@ -102,24 +102,29 @@ rules:
 
 Isolate domain from infrastructure. Ports (interfaces) live in domain, adapters depend on domain but not vice versa.
 
+Using named captures (`{context}`), you can enforce that each bounded context only depends on its own domain — not other contexts' domains:
+
 ```yaml
 rules:
   - name: domain-no-infra
-    modules: contexts.*.domain
+    modules: contexts.{context}.domain
     allow:
       standard_library: [dataclasses, typing, abc]
       third_party: []
-      local: [contexts.*.domain]
+      local: [contexts.{context}.domain, shared.domain]
 
   - name: adapters-depend-on-domain
-    modules: contexts.*.adapters
+    modules: contexts.{context}.adapters
     allow:
       standard_library: ["*"]
       third_party: ["*"]
       local:
-        - contexts.*.adapters
-        - contexts.*.domain
+        - contexts.{context}.adapters
+        - contexts.{context}.domain
+        - shared
 ```
+
+With `{context}`, `contexts.boards.domain` can only import from `contexts.boards.domain` and `shared.domain` — not from `contexts.auth.domain`. See [Named Capture](#named-capture) for details.
 
 ## Configuration
 
@@ -221,6 +226,35 @@ modules: contexts.*.domain  # matches contexts.boards.domain, contexts.auth.doma
 ```yaml
 modules: contexts.**.domain  # matches contexts.boards.domain, contexts.boards.sub.domain, ...
 ```
+
+### Named Capture
+
+`{name}` captures a single level (like `*`) and allows back-referencing the captured value in `allow` and `deny`:
+
+```yaml
+rules:
+  - name: domain-isolation
+    modules: contexts.{context}.domain
+    allow:
+      local: [contexts.{context}.domain, shared.domain]
+```
+
+When this rule matches `contexts.boards.domain`, `{context}` captures `"boards"`. The `allow` pattern `contexts.{context}.domain` resolves to `contexts.boards.domain`, so only the same context's domain is allowed.
+
+You can use multiple captures in a single rule:
+
+```yaml
+rules:
+  - name: bounded-context-layers
+    modules: contexts.{context}.{layer}
+    allow:
+      local:
+        - contexts.{context}.{layer}
+        - contexts.{context}.domain
+        - shared
+```
+
+Named captures coexist with `*` and `**` wildcards. `{name}` always matches exactly one level.
 
 ### Submodule Matching
 
