@@ -77,7 +77,7 @@ python-dependency-linter/
 ```toml
 [build-system]
 requires = ["hatchling"]
-build-backend = "hatchling.backends"
+build-backend = "hatchling.build"
 
 [project]
 name = "python-dependency-linter"
