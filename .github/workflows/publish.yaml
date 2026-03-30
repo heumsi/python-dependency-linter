@@ -17,7 +17,7 @@ jobs:
       - name: Generate full changelog
         uses: orhun/git-cliff-action@v4
         with:
-          config: cliff.toml
+          config: pyproject.toml
           args: --verbose
         env:
           OUTPUT: CHANGELOG.md
@@ -33,7 +33,7 @@ jobs:
         id: release_notes
         uses: orhun/git-cliff-action@v4
         with:
-          config: cliff.toml
+          config: pyproject.toml
           args: --verbose --latest --strip header
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

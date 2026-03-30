@@ -50,3 +50,45 @@ known-first-party = ["python_dependency_linter"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.git-cliff.changelog]
+header = """# Changelog\n
+All notable changes to this project will be documented in this file.\n
+"""
+body = """
+{%- macro remote_url() -%}
+  https://github.com/heumsi/python-dependency-linter
+{%- endmacro -%}
+
+{% if version -%}
+## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## [Unreleased]
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | split(pat=":") | last | trim }}\
+{% endfor %}
+{% endfor %}
+"""
+trim = true
+
+[tool.git-cliff.git]
+conventional_commits = true
+filter_unconventional = true
+commit_preprocessors = [
+  { pattern = ' *(:\w+:|[\p{Emoji_Presentation}\p{Extended_Pictographic}]\u{FE0F}?\u{200D}?) *', replace = "" },
+]
+commit_parsers = [
+  { message = "^.*feat", group = "Features" },
+  { message = "^.*fix", group = "Bug Fixes" },
+  { message = "^.*refactor", group = "Refactor" },
+  { message = "^.*perf", group = "Performance" },
+  { message = "^.*doc", group = "Documentation" },
+  { message = "^.*test", group = "Testing" },
+  { message = "^.*chore", group = "Miscellaneous" },
+  { message = "^.*ci", group = "CI/CD" },
+]
+tag_pattern = "v[0-9].*"
