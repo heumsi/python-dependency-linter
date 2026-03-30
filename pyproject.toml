@@ -33,6 +33,7 @@ pdl = "python_dependency_linter.cli:main"
 dev = [
     "pytest>=7.0",
     "ruff>=0.4",
+    "ty>=0.0.26",
     "pre-commit>=3.0",
 ]
 
@@ -47,6 +48,12 @@ select = ["E", "F", "I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["python_dependency_linter"]
+
+[tool.ty.src]
+exclude = ["tests/fixtures/"]
+
+[tool.ty.rules]
+unresolved-import = "ignore"  # tomllib/tomli compatibility pattern
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

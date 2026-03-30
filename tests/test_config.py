@@ -12,6 +12,7 @@ def test_load_yaml_config():
     rule = config.rules[0]
     assert rule.name == "domain-isolation"
     assert rule.modules == "contexts.*.domain"
+    assert rule.allow is not None
     assert rule.allow.standard_library == ["dataclasses", "typing"]
     assert rule.allow.third_party == ["pydantic"]
     assert rule.allow.local == ["contexts.*.domain"]
@@ -22,6 +23,7 @@ def test_load_yaml_config_deny():
     config = load_config(FIXTURES / "sample_config.yaml")
     rule = config.rules[1]
     assert rule.name == "adapters-deny-boto"
+    assert rule.deny is not None
     assert rule.deny.third_party == ["boto3"]
     assert rule.allow is None
 
@@ -33,6 +35,7 @@ def test_load_pyproject_toml():
     rule = config.rules[0]
     assert rule.name == "domain-isolation"
     assert rule.modules == "contexts.*.domain"
+    assert rule.allow is not None
     assert rule.allow.standard_library == ["dataclasses", "typing"]
 
 

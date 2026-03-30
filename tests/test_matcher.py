@@ -91,6 +91,8 @@ def test_merge_rules_merges_allow():
     )
     merged = merge_rules([wildcard_rule, specific_rule])
 
+    assert merged.allow is not None
+    assert merged.allow.third_party is not None
     assert sorted(merged.allow.third_party) == ["attrs", "pydantic"]
     assert merged.allow.standard_library == ["typing"]
     assert merged.deny is None
@@ -103,6 +105,7 @@ def test_merge_rules_single():
         allow=AllowDeny(third_party=["pydantic"]),
     )
     merged = merge_rules([rule])
+    assert merged.allow is not None
     assert merged.allow.third_party == ["pydantic"]
 
 
@@ -117,6 +120,8 @@ def test_merge_rules_merges_deny():
     )
     merged = merge_rules([rule1, rule2])
 
+    assert merged.deny is not None
+    assert merged.deny.third_party is not None
     assert sorted(merged.deny.third_party) == ["boto3", "requests"]
 
 
