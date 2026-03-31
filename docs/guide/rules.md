@@ -8,11 +8,11 @@ Every rule has two required fields and two optional ones:
 
 ```yaml
 rules:
-  - name: my-rule            # Unique identifier for this rule
-    modules: my_app.domain   # Which modules this rule applies to
-    description: ...         # (optional) Human-readable description
-    allow: { ... }           # (optional) Whitelist of allowed dependencies
-    deny: { ... }            # (optional) Blacklist of denied dependencies
+  - name: my-rule                          # Unique identifier for this rule
+    modules: my_app.domain                 # Which modules this rule applies to
+    description: Keep domain layer pure    # (optional) Human-readable description
+    allow: { ... }                         # (optional) Whitelist of allowed dependencies
+    deny: { ... }                          # (optional) Blacklist of denied dependencies
 ```
 
 The `name` is used in violation output and in `# pdl: ignore` comments. The optional `description` is also shown in violation output to explain why the rule exists.
@@ -74,6 +74,7 @@ rules:
 rules:
   - name: domain-isolation
     modules: my_app.domain
+    description: Domain layer must not depend on application or infrastructure
     allow:
       standard_library: [dataclasses, typing]
       third_party: [pydantic]
@@ -95,6 +96,7 @@ rules:
 rules:
   - name: no-orm-in-domain
     modules: my_app.domain
+    description: Domain must not use ORM frameworks directly
     deny:
       third_party: [sqlalchemy, django]
 ```
@@ -186,6 +188,7 @@ modules: contexts.**.domain
 rules:
   - name: domain-isolation
     modules: contexts.{context}.domain
+    description: Each context's domain can only depend on its own domain and shared
     allow:
       local: [contexts.{context}.domain, shared.domain]
 ```
@@ -204,6 +207,7 @@ You can use multiple captures in a single rule:
 rules:
   - name: bounded-context-layers
     modules: contexts.{context}.{layer}
+    description: Each layer can only depend on itself, its domain, and shared
     allow:
       local:
         - contexts.{context}.{layer}

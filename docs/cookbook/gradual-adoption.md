@@ -12,6 +12,7 @@ Instead of a strict allowlist, start by denying only the most problematic depend
 rules:
   - name: no-orm-in-domain
     modules: my_app.domain
+    description: Domain must not use ORM frameworks directly
     deny:
       third_party: [sqlalchemy, django]
 ```
@@ -29,6 +30,7 @@ include:
 rules:
   - name: new-module-rules
     modules: my_app.new_module
+    description: New module follows strict dependency rules
     allow:
       standard_library: ["*"]
       third_party: [pydantic]
@@ -56,6 +58,7 @@ Start with the most important boundary (usually domain isolation) and add rules 
 rules:
   - name: domain-isolation
     modules: my_app.domain
+    description: Domain has no outward dependencies
     allow:
       standard_library: ["*"]
       third_party: []
@@ -67,6 +70,7 @@ rules:
 rules:
   - name: domain-isolation
     modules: my_app.domain
+    description: Domain has no outward dependencies
     allow:
       standard_library: ["*"]
       third_party: []
@@ -74,6 +78,7 @@ rules:
 
   - name: application-layer
     modules: my_app.application
+    description: Application depends on domain only
     allow:
       standard_library: ["*"]
       third_party: [pydantic]
@@ -86,7 +91,8 @@ With Strategy 1, only the specific denied imports are flagged:
 
 ```
 my_app/domain/repo.py:1
-    [no-orm-in-domain] my_app.domain.repo → sqlalchemy (third_party)
+    [no-orm-in-domain] Domain must not use ORM frameworks directly
+    my_app.domain.repo → sqlalchemy (third_party)
 
 Found 1 violation(s).
 ```

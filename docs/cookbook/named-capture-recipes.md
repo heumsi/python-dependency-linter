@@ -12,6 +12,7 @@ Each context can only import from its own domain:
 rules:
   - name: context-boundary
     modules: contexts.{context}.{layer}
+    description: Each context can only depend on its own modules and shared
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -30,6 +31,7 @@ Combine context isolation with layer direction:
 rules:
   - name: domain-isolation
     modules: contexts.{context}.domain
+    description: Domain depends only on its own domain and shared domain
     allow:
       standard_library: ["*"]
       third_party: []
@@ -39,6 +41,7 @@ rules:
 
   - name: application-layer
     modules: contexts.{context}.application
+    description: Application depends on its own domain but not other contexts
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -56,6 +59,7 @@ For a flat feature structure like `features.{feature}.api`, `features.{feature}.
 rules:
   - name: feature-boundary
     modules: features.{feature}
+    description: Each feature is isolated from other features
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -72,7 +76,8 @@ With Recipe 1, if `contexts.orders.service` imports `contexts.users.models`:
 
 ```
 contexts/orders/service.py:2
-    [context-boundary] contexts.orders.service → contexts.users.models (local)
+    [context-boundary] Each context can only depend on its own modules and shared
+    contexts.orders.service → contexts.users.models (local)
 
 Found 1 violation(s).
 ```

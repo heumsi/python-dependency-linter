@@ -12,6 +12,7 @@ Using [named captures](../guide/rules.md#named-capture), you can enforce that ea
 rules:
   - name: domain-no-infra
     modules: contexts.{context}.domain
+    description: Domain must not depend on infrastructure or other contexts
     allow:
       standard_library: [dataclasses, typing, abc]
       third_party: []
@@ -19,6 +20,7 @@ rules:
 
   - name: adapters-depend-on-domain
     modules: contexts.{context}.adapters
+    description: Adapters can depend on their own domain but not other contexts
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -34,7 +36,8 @@ With `{context}`, `contexts.boards.domain` can only import from `contexts.boards
 
 ```
 contexts/boards/domain/service.py:2
-    [domain-no-infra] contexts.boards.domain.service → contexts.auth.domain.models (local)
+    [domain-no-infra] Domain must not depend on infrastructure or other contexts
+    contexts.boards.domain.service → contexts.auth.domain.models (local)
 
 Found 1 violation(s).
 ```

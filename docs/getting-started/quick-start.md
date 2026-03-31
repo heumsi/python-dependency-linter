@@ -10,6 +10,7 @@ Create `.python-dependency-linter.yaml` in your project root and define your dep
 rules:
   - name: domain-isolation
     modules: contexts.*.domain
+    description: Domain layer must not depend on application or infrastructure
     allow:
       standard_library: [dataclasses, typing]
       third_party: [pydantic]
@@ -17,6 +18,7 @@ rules:
 
   - name: application-dependency
     modules: contexts.*.application
+    description: Application layer can depend on domain but not on infrastructure
     allow:
       standard_library: ["*"]
       third_party: [pydantic]
@@ -48,10 +50,12 @@ Violations are reported with the file path, line number, rule name, and the depe
 
 ```
 contexts/boards/domain/models.py:6
-    [domain-isolation] contexts.boards.domain.models → contexts.boards.application.service (local)
+    [domain-isolation] Domain layer must not depend on application or infrastructure
+    contexts.boards.domain.models → contexts.boards.application.service (local)
 
 contexts/boards/domain/models.py:9
-    [domain-isolation] contexts.boards.domain.models → sqlalchemy (third_party)
+    [domain-isolation] Domain layer must not depend on application or infrastructure
+    contexts.boards.domain.models → sqlalchemy (third_party)
 
 Found 2 violation(s).
 ```
