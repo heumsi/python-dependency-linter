@@ -74,7 +74,7 @@ Each feature is isolated — `features.billing` cannot import from `features.aut
 
 With Recipe 1, if `contexts.orders.service` imports `contexts.users.models`:
 
-```
+```text
 contexts/orders/service.py:2
     [context-boundary] Each context can only depend on its own modules and shared
     contexts.orders.service → contexts.users.models (local)

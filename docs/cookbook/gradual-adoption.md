@@ -89,7 +89,7 @@ rules:
 
 With Strategy 1, only the specific denied imports are flagged:
 
-```
+```text
 my_app/domain/repo.py:1
     [no-orm-in-domain] Domain must not use ORM frameworks directly
     my_app.domain.repo → sqlalchemy (third_party)

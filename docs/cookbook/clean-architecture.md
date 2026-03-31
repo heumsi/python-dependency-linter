@@ -54,7 +54,7 @@ rules:
 
 If `my_app.entities.user` imports `pydantic`:
 
-```
+```text
 my_app/entities/user.py:1
     [entities-isolation] Entities are pure domain objects with no external dependencies
     my_app.entities.user → pydantic (third_party)
@@ -64,7 +64,7 @@ Found 1 violation(s).
 
 If `my_app.use_cases.create_user` imports from `my_app.interface_adapters`:
 
-```
+```text
 my_app/use_cases/create_user.py:3
     [use-cases] Use cases depend only on entities, not on adapters or frameworks
     my_app.use_cases.create_user → my_app.interface_adapters.repo (local)

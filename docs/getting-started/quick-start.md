@@ -48,7 +48,7 @@ pdl check
 
 Violations are reported with the file path, line number, rule name, and the dependency direction:
 
-```
+```text
 contexts/boards/domain/models.py:6
     [domain-isolation] Domain layer must not depend on application or infrastructure
     contexts.boards.domain.models → contexts.boards.application.service (local)

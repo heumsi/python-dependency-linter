@@ -34,7 +34,7 @@ rules:
 
 With `{context}`, `contexts.boards.domain` can only import from `contexts.boards.domain` and `shared.domain` — not from `contexts.auth.domain`:
 
-```
+```text
 contexts/boards/domain/service.py:2
     [domain-no-infra] Domain must not depend on infrastructure or other contexts
     contexts.boards.domain.service → contexts.auth.domain.models (local)

@@ -42,7 +42,7 @@ rules:
 
 If `my_app.domain.models` imports `sqlalchemy`:
 
-```
+```text
 my_app/domain/models.py:3
     [domain-isolation] Domain has no outward dependencies
     my_app.domain.models → sqlalchemy (third_party)
@@ -52,7 +52,7 @@ Found 1 violation(s).
 
 If `my_app.application.service` imports `fastapi`:
 
-```
+```text
 my_app/application/service.py:1
     [application-layer] Application depends on domain only, not on presentation
     my_app.application.service → fastapi (third_party)

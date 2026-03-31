@@ -10,7 +10,7 @@ Your project has multiple packages in a monorepo and you want to lint each packa
 
 Each package has its own `.python-dependency-linter.yaml`:
 
-```
+```text
 monorepo/
 ├── packages/
 │   ├── auth/
@@ -58,7 +58,7 @@ rules:
 
 If `billing.service` imports `auth.models`:
 
-```
+```text
 packages/billing/billing/service.py:1
     [billing-isolation] Billing package can only depend on itself and shared
     billing.service → auth.models (local)

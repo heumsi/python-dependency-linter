@@ -59,7 +59,7 @@ pdl check
 
 **Output:**
 
-```
+```text
 contexts/boards/domain/models.py:6
     [domain-isolation] contexts.boards.domain.models → contexts.boards.application.service (local)
 

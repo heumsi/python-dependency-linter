@@ -6,7 +6,7 @@ Commit messages must follow [Conventional Commits](https://www.conventionalcommi
 
 ### Format
 
-```
+```text
 <gitmoji> <type>: <description>
 ```
 
@@ -28,7 +28,7 @@ Commit messages must follow [Conventional Commits](https://www.conventionalcommi
 
 ### Examples
 
-```
+```text
 ✨ feat: Add support for relative imports
 🐛 fix: Use exit code 2 for config file not found
 ♻️ refactor: Simplify module resolver logic
