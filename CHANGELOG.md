@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-03-31
+
+### CI/CD
+
+- Add ty type checker to dev toolchain
+
+### Documentation
+
+- Update pre-commit description in CONTRIBUTING.md
+
+### Features
+
+- Add rule name validation (#21)
+- Add inline ignore comment support (#22)
+
+### Miscellaneous
+
+- Rename pre-commit hook ids and names for clarity
 ## [0.5.1] - 2026-03-30
 
 ### Bug Fixes
