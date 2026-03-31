@@ -141,11 +141,15 @@ rules:
     modules: src.*
   - name: rule1
     modules: src.*
+  - name: shared.domain
+    modules: src.*
+  - name: context.adapters.inbound
+    modules: src.*
 """
     config_file = tmp_path / "config.yaml"
     config_file.write_text(config_content)
     config = load_config(config_file)
-    assert len(config.rules) == 3
+    assert len(config.rules) == 5
 
 
 def test_invalid_rule_name_with_space(tmp_path):

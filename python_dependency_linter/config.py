@@ -40,7 +40,7 @@ def _parse_allow_deny(data: dict | None) -> AllowDeny | None:
     )
 
 
-_RULE_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
+_RULE_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_.\-]+$")
 
 
 def _parse_rules(rules_data: list[dict]) -> list[Rule]:
@@ -49,7 +49,7 @@ def _parse_rules(rules_data: list[dict]) -> list[Rule]:
         name = r["name"]
         if not _RULE_NAME_PATTERN.match(name):
             raise ValueError(
-                f"Invalid rule name '{name}'. Rule names must match [a-zA-Z0-9_-]+"
+                f"Invalid rule name '{name}'. Rule names must match [a-zA-Z0-9_.-]+"
             )
         rules.append(
             Rule(
