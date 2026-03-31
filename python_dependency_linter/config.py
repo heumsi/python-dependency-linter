@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -38,12 +39,20 @@ def _parse_allow_deny(data: dict | None) -> AllowDeny | None:
     )
 
 
+_RULE_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
+
+
 def _parse_rules(rules_data: list[dict]) -> list[Rule]:
     rules = []
     for r in rules_data:
+        name = r["name"]
+        if not _RULE_NAME_PATTERN.match(name):
+            raise ValueError(
+                f"Invalid rule name '{name}'. Rule names must match [a-zA-Z0-9_-]+"
+            )
         rules.append(
             Rule(
-                name=r["name"],
+                name=name,
                 modules=r["modules"],
                 allow=_parse_allow_deny(r.get("allow")),
                 deny=_parse_allow_deny(r.get("deny")),

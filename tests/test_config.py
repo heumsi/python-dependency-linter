@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from python_dependency_linter.config import find_config, load_config
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -127,3 +129,55 @@ def test_find_config_skips_pyproject_without_section(tmp_path, monkeypatch):
     (tmp_path / "pyproject.toml").write_text("[tool.other]\nfoo = 1\n")
     monkeypatch.chdir(tmp_path)
     assert find_config() is None
+
+
+def test_valid_rule_names(tmp_path):
+    config_content = """\
+rules:
+  - name: attribute-matches-type
+    modules: src.*
+  - name: bool_method
+    modules: src.*
+  - name: rule1
+    modules: src.*
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert len(config.rules) == 3
+
+
+def test_invalid_rule_name_with_space(tmp_path):
+    config_content = """\
+rules:
+  - name: "my rule"
+    modules: src.*
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    with pytest.raises(ValueError, match=r"Invalid rule name 'my rule'"):
+        load_config(config_file)
+
+
+def test_invalid_rule_name_with_special_char(tmp_path):
+    config_content = """\
+rules:
+  - name: "rule!name"
+    modules: src.*
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    with pytest.raises(ValueError, match=r"Invalid rule name 'rule!name'"):
+        load_config(config_file)
+
+
+def test_invalid_rule_name_with_mixed(tmp_path):
+    config_content = """\
+rules:
+  - name: "rule name 123"
+    modules: src.*
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    with pytest.raises(ValueError, match=r"Invalid rule name 'rule name 123'"):
+        load_config(config_file)
