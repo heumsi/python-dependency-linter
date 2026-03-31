@@ -36,6 +36,10 @@ dev = [
     "ty>=0.0.26",
     "pre-commit>=3.0",
 ]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-shadcn",
+]
 
 [tool.hatch.version]
 source = "vcs"

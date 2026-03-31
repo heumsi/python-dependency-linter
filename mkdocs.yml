@@ -1,0 +1,47 @@
+site_name: Python Dependency Linter
+site_url: https://heumsi.github.io/python-dependency-linter/
+repo_url: https://github.com/heumsi/python-dependency-linter
+repo_name: heumsi/python-dependency-linter
+
+exclude_docs: |
+  superpowers/
+
+theme:
+  name: shadcn
+  show_title: true
+  show_stargazers: true
+  pygments_style:
+    light: shadcn-light
+    dark: github-dark
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - fenced_code
+  - footnotes
+  - attr_list
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Configuration: getting-started/configuration.md
+  - Guide:
+      - Rules: guide/rules.md
+  - Cookbook:
+      - Overview: cookbook/index.md
+      - Layered Architecture: cookbook/layered-architecture.md
+      - Hexagonal Architecture: cookbook/hexagonal-architecture.md
+      - Clean Architecture: cookbook/clean-architecture.md
+      - Named Capture Recipes: cookbook/named-capture-recipes.md
+      - Monorepo: cookbook/monorepo.md
+      - Gradual Adoption: cookbook/gradual-adoption.md
+  - Reference:
+      - Config Schema: reference/config-schema.md
+      - CLI: cli.md
+      - Pre-commit: pre-commit.md
+      - Contributing: contributing.md
+      - Changelog: changelog.md
