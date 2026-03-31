@@ -109,6 +109,23 @@ def test_merge_rules_single():
     assert merged.allow.third_party == ["pydantic"]
 
 
+def test_merge_rules_preserves_description():
+    rule1 = Rule(
+        name="r1",
+        modules="contexts.*.domain",
+        description="First rule description",
+        allow=AllowDeny(third_party=["pydantic"]),
+    )
+    rule2 = Rule(
+        name="r2",
+        modules="contexts.boards.domain",
+        description="Second rule description",
+        allow=AllowDeny(third_party=["attrs"]),
+    )
+    merged = merge_rules([rule1, rule2])
+    assert merged.description == "First rule description"
+
+
 def test_merge_rules_merges_deny():
     rule1 = Rule(
         name="r1", modules="contexts.*.adapters", deny=AllowDeny(third_party=["boto3"])
