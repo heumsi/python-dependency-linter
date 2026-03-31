@@ -1,8 +1,10 @@
 # Quick Start
 
-## 1. Create a config file
+Get `pdl` running in your project in three steps.
 
-Create `.python-dependency-linter.yaml` in your project root:
+## Step 1: Create a Config File
+
+Create `.python-dependency-linter.yaml` in your project root and define your dependency rules:
 
 ```yaml
 rules:
@@ -23,15 +25,26 @@ rules:
         - contexts.*.domain
 ```
 
+This config defines two rules:
+
+- `domain-isolation` — modules under `contexts.*.domain` can only import `dataclasses`, `typing`, `pydantic`, and other domain modules.
+- `application-dependency` — modules under `contexts.*.application` can import any standard library, `pydantic`, and application or domain modules.
+
 You can also use `pyproject.toml`. See [Configuration](./configuration.md) for details.
 
-## 2. Run the linter
+## Step 2: Run the Linter
+
+From your project root, run:
 
 ```bash
 pdl check
 ```
 
-## 3. Review violations
+`pdl` automatically discovers the config file by searching upward from the current working directory.
+
+## Step 3: Review the Output
+
+Violations are reported with the file path, line number, rule name, and the dependency direction:
 
 ```
 contexts/boards/domain/models.py:6
@@ -43,8 +56,9 @@ contexts/boards/domain/models.py:9
 Found 2 violation(s).
 ```
 
-Exit codes:
+Fix the reported imports and re-run `pdl check` until no violations remain.
 
-- `0` — No violations
-- `1` — Violations found
-- `2` — Config file not found
+## Next Steps
+
+- Learn all available config options in [Configuration](./configuration.md).
+- See rule details and pattern options in the [Guide](../guide/rules.md).

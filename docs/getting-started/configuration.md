@@ -1,8 +1,23 @@
 # Configuration
 
-python-dependency-linter supports two config formats: YAML and TOML.
+`pdl` supports two config file formats: a standalone YAML file or an inline section inside `pyproject.toml`.
 
-## YAML
+## Config File Discovery
+
+When you run `pdl check` without `--config`, the tool searches **upward from the current working directory** for one of:
+
+- `.python-dependency-linter.yaml`
+- `pyproject.toml` (containing a `[tool.python-dependency-linter]` section)
+
+The first matching file is used, and its parent directory becomes the project root.
+
+To use a specific config file, pass it explicitly:
+
+```bash
+pdl check --config path/to/config.yaml
+```
+
+## YAML Format
 
 Create `.python-dependency-linter.yaml` in your project root:
 
@@ -16,7 +31,9 @@ rules:
       local: [contexts.*.domain]
 ```
 
-## TOML (pyproject.toml)
+## pyproject.toml Format
+
+You can embed the same configuration inside `pyproject.toml` using the `[tool.python-dependency-linter]` namespace:
 
 ```toml
 [[tool.python-dependency-linter.rules]]
@@ -29,22 +46,17 @@ third_party = ["pydantic"]
 local = ["contexts.*.domain"]
 ```
 
-## Config Discovery
+Both formats are equivalent — use whichever fits your project's conventions.
 
-If no `--config` is given, the tool searches upward from the current directory for:
+## Top-Level Keys
 
-1. `.python-dependency-linter.yaml`
-2. `pyproject.toml` (with `[tool.python-dependency-linter]` section)
+| Key | Description |
+|-----|-------------|
+| `rules` | List of dependency rule definitions |
+| `include` | Paths to include when scanning (optional) |
+| `exclude` | Paths to exclude when scanning (optional) |
 
-The config file's parent directory is used as the project root.
-
-If no config file is found, the tool exits with code `2`:
-
-```
-Error: Config file not found. Create .python-dependency-linter.yaml or configure [tool.python-dependency-linter] in pyproject.toml.
-```
-
-## Include / Exclude
+### include / exclude
 
 Control which files are scanned:
 
@@ -53,15 +65,14 @@ include:
   - src
 exclude:
   - src/generated/**
-
-rules:
-  - name: ...
 ```
 
-- **No `include` or `exclude`** — All `.py` files under the project root are scanned
-- **`include` only** — Only files matching the given paths are scanned
-- **`exclude` only** — All files except those matching the given paths are scanned
-- **Both** — `include` is applied first, then `exclude` filters within that result
+Behavior:
+
+- **Neither** — all `.py` files under the project root are scanned.
+- **`include` only** — only files matching the given paths are scanned.
+- **`exclude` only** — all files except those matching the given paths are scanned.
+- **Both** — `include` is applied first, then `exclude` filters within that result.
 
 Bare directory names (e.g., `src`) and trailing-slash forms (e.g., `src/`) are treated the same as `src/**`.
 

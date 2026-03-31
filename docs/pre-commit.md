@@ -1,6 +1,10 @@
 # Pre-commit
 
-Add to your `.pre-commit-config.yaml`:
+`pdl` can be used as a [pre-commit](https://pre-commit.com/) hook to enforce dependency rules before every commit.
+
+## Setup
+
+Add the following to your `.pre-commit-config.yaml`:
 
 ```yaml
 - repo: https://github.com/heumsi/python-dependency-linter
@@ -9,7 +13,9 @@ Add to your `.pre-commit-config.yaml`:
     - id: python-dependency-linter
 ```
 
-To pass custom options (e.g., a different config file):
+## Custom Options
+
+To pass custom options (e.g., a specific config file path), use `args`:
 
 ```yaml
 - repo: https://github.com/heumsi/python-dependency-linter
