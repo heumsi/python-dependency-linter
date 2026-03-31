@@ -23,7 +23,7 @@ rules:
         - contexts.*.domain
 ```
 
-You can also use `pyproject.toml`. See [Configuration](../guide/configuration.md) for details.
+You can also use `pyproject.toml`. See [Configuration](./configuration.md) for details.
 
 ## 2. Run the linter
 

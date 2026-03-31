@@ -8,21 +8,34 @@ exclude_docs: |
 
 theme:
   name: shadcn
+  show_title: true
+  show_stargazers: true
+  pygments_style:
+    light: shadcn-light
+    dark: github-dark
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - fenced_code
+  - footnotes
+  - attr_list
+  - toc:
+      permalink: true
 
 nav:
   - Home: index.md
   - Getting Started:
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quick-start.md
-      - Pre-commit: getting-started/pre-commit.md
+      - Configuration: getting-started/configuration.md
   - Guide:
-      - Configuration: guide/configuration.md
       - Rules: guide/rules.md
       - Patterns: guide/patterns.md
       - Rule Merging: guide/rule-merging.md
       - Inline Ignore: guide/inline-ignore.md
-      - CLI: guide/cli.md
   - Cookbook:
+      - Overview: cookbook/index.md
       - Layered Architecture: cookbook/layered-architecture.md
       - Hexagonal Architecture: cookbook/hexagonal-architecture.md
       - Clean Architecture: cookbook/clean-architecture.md
@@ -31,3 +44,7 @@ nav:
       - Gradual Adoption: cookbook/gradual-adoption.md
   - Reference:
       - Config Schema: reference/config-schema.md
+      - CLI: cli.md
+      - Pre-commit: pre-commit.md
+      - Contributing: contributing.md
+      - Changelog: changelog.md
