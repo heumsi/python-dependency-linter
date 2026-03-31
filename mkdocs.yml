@@ -1,0 +1,33 @@
+site_name: python-dependency-linter
+site_url: https://heumsi.github.io/python-dependency-linter/
+repo_url: https://github.com/heumsi/python-dependency-linter
+repo_name: heumsi/python-dependency-linter
+
+exclude_docs: |
+  superpowers/
+
+theme:
+  name: shadcn
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Pre-commit: getting-started/pre-commit.md
+  - Guide:
+      - Configuration: guide/configuration.md
+      - Rules: guide/rules.md
+      - Patterns: guide/patterns.md
+      - Rule Merging: guide/rule-merging.md
+      - Inline Ignore: guide/inline-ignore.md
+      - CLI: guide/cli.md
+  - Cookbook:
+      - Layered Architecture: cookbook/layered-architecture.md
+      - Hexagonal Architecture: cookbook/hexagonal-architecture.md
+      - Clean Architecture: cookbook/clean-architecture.md
+      - Named Capture Recipes: cookbook/named-capture-recipes.md
+      - Monorepo: cookbook/monorepo.md
+      - Gradual Adoption: cookbook/gradual-adoption.md
+  - Reference:
+      - Config Schema: reference/config-schema.md
