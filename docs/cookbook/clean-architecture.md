@@ -1,6 +1,6 @@
 # Clean Architecture
 
-## Problem
+## Purpose
 
 You follow Clean Architecture with concentric layers: `entities → use_cases → interface_adapters → frameworks`. Inner layers must not depend on outer layers.
 

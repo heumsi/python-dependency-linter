@@ -1,6 +1,6 @@
 # Monorepo
 
-## Problem
+## Purpose
 
 Your project has multiple packages in a monorepo and you want to lint each package's dependencies separately, or enforce boundaries between packages.
 

@@ -1,6 +1,6 @@
 # Named Capture Recipes
 
-## Problem
+## Purpose
 
 You have multiple bounded contexts or feature modules and want to enforce that each module only depends on its own internals, without writing a separate rule for each module.
 

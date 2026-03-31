@@ -1,6 +1,6 @@
 # Gradual Adoption
 
-## Problem
+## Purpose
 
 You want to introduce dependency linting to an existing project without fixing all violations at once.
 

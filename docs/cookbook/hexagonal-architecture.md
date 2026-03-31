@@ -1,6 +1,6 @@
 # Hexagonal Architecture
 
-## Problem
+## Purpose
 
 You want to isolate domain from infrastructure. Ports (interfaces) live in domain, adapters depend on domain but not vice versa. Each bounded context should only depend on its own domain.
 

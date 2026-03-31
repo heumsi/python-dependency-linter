@@ -1,6 +1,6 @@
 # Layered Architecture
 
-## Problem
+## Purpose
 
 You have a layered architecture (`presentation → application → domain`) and want to enforce that dependencies only flow downward. The `domain` layer should have no outward dependencies.
 
