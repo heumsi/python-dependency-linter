@@ -22,6 +22,7 @@ Create `.python-dependency-linter.yaml` in your project root:
 rules:
   - name: domain-isolation
     modules: contexts.*.domain
+    description: Domain layer must not depend on application or infrastructure
     allow:
       standard_library: [dataclasses, typing]
       third_party: [pydantic]
