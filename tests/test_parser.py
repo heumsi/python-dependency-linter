@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from python_dependency_linter.parser import ImportInfo, parse_imports
+from python_dependency_linter.parser import (
+    ImportInfo,
+    _parse_ignore_comment,
+    parse_imports,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures" / "sample_project"
 
@@ -72,3 +76,54 @@ def test_parse_relative_import_from_init():
     imports = parse_imports(file_path, project_root=FIXTURES)
 
     assert ImportInfo(module="contexts.boards.domain", lineno=1) in imports
+
+
+# --- _parse_ignore_comment tests ---
+
+
+def test_parse_ignore_comment_no_comment():
+    assert _parse_ignore_comment("import os") is None
+
+
+def test_parse_ignore_comment_blanket():
+    assert _parse_ignore_comment("import os  # pdl: ignore") == []
+
+
+def test_parse_ignore_comment_single_rule():
+    assert _parse_ignore_comment("import os  # pdl: ignore[domain-isolation]") == [
+        "domain-isolation"
+    ]
+
+
+def test_parse_ignore_comment_multiple_rules():
+    assert _parse_ignore_comment(
+        "import os  # pdl: ignore[domain-isolation, adapters-deny]"
+    ) == ["domain-isolation", "adapters-deny"]
+
+
+def test_parse_ignore_comment_whitespace_variants():
+    assert _parse_ignore_comment("import os  #pdl:ignore") == []
+    assert _parse_ignore_comment("import os  #  pdl:  ignore[rule1]") == ["rule1"]
+
+
+# --- parse_imports with ignore comment ---
+
+
+def test_parse_imports_with_ignore_comment(tmp_path):
+    source = """\
+import os  # pdl: ignore
+from typing import Optional
+import sys  # pdl: ignore[domain-isolation, adapters-deny]
+"""
+    file_path = tmp_path / "test.py"
+    file_path.write_text(source)
+    imports = parse_imports(file_path, project_root=tmp_path)
+
+    os_imp = next(i for i in imports if i.module == "os")
+    assert os_imp.ignore_rules == []
+
+    typing_imp = next(i for i in imports if i.module == "typing")
+    assert typing_imp.ignore_rules is None
+
+    sys_imp = next(i for i in imports if i.module == "sys")
+    assert sys_imp.ignore_rules == ["domain-isolation", "adapters-deny"]
