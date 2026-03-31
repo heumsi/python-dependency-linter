@@ -6,7 +6,7 @@ You want to isolate domain from infrastructure. Ports (interfaces) live in domai
 
 ## Configuration
 
-Using [named captures](../guide/patterns.md#named-capture), you can enforce that each bounded context only depends on its own domain:
+Using [named captures](../guide/rules.md#named-capture), you can enforce that each bounded context only depends on its own domain:
 
 ```yaml
 rules:

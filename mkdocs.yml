@@ -31,9 +31,6 @@ nav:
       - Configuration: getting-started/configuration.md
   - Guide:
       - Rules: guide/rules.md
-      - Patterns: guide/patterns.md
-      - Rule Merging: guide/rule-merging.md
-      - Inline Ignore: guide/inline-ignore.md
   - Cookbook:
       - Overview: cookbook/index.md
       - Layered Architecture: cookbook/layered-architecture.md
