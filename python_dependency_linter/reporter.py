@@ -10,8 +10,12 @@ def format_violations(file_path: str, violations: list[Violation]) -> str:
     lines = []
     for v in violations:
         lines.append(f"{file_path}:{v.lineno}")
+        if v.rule_description:
+            lines.append(f"    [{v.rule_name}] {v.rule_description}")
+        else:
+            lines.append(f"    [{v.rule_name}]")
         arrow = f"{v.source_module} \u2192 {v.imported_module}"
-        lines.append(f"    [{v.rule_name}] {arrow} ({v.category.value})")
+        lines.append(f"    {arrow} ({v.category.value})")
         lines.append("")
 
     return "\n".join(lines)

@@ -46,6 +46,7 @@ class Violation:
     imported_module: str
     category: ImportCategory
     lineno: int
+    rule_description: str | None = None
 
 
 def _get_category_list(
@@ -100,6 +101,7 @@ def check_import(
         merged_rule = Rule(
             name=merged_rule.name,
             modules=merged_rule.modules,
+            description=merged_rule.description,
             allow=_resolve_allow_deny(merged_rule.allow, captures),
             deny=_resolve_allow_deny(merged_rule.deny, captures),
         )
@@ -115,6 +117,7 @@ def check_import(
             imported_module=module,
             category=category,
             lineno=import_info.lineno,
+            rule_description=merged_rule.description,
         )
 
     # Check allow
@@ -131,4 +134,5 @@ def check_import(
         imported_module=module,
         category=category,
         lineno=import_info.lineno,
+        rule_description=merged_rule.description,
     )

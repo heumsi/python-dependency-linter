@@ -47,6 +47,7 @@ def test_allow_whitelist_violation():
     assert result.imported_module == "sqlalchemy"
     assert result.category == ImportCategory.THIRD_PARTY
     assert result.lineno == 5
+    assert result.rule_description is None
 
 
 def test_deny_blacklist_violation():
@@ -223,3 +224,39 @@ def test_check_import_no_captures_backward_compat():
         source_module="contexts.boards.domain",
     )
     assert result is None
+
+
+def test_violation_includes_description():
+    """Violation should carry rule description when present."""
+    rule = Rule(
+        name="domain-isolation",
+        modules="contexts.*.domain",
+        description="Domain layer must remain pure",
+        allow=AllowDeny(third_party=["pydantic"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="sqlalchemy", lineno=5),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.domain",
+    )
+    assert isinstance(result, Violation)
+    assert result.rule_description == "Domain layer must remain pure"
+
+
+def test_deny_violation_includes_description():
+    """Deny violation should also carry rule description."""
+    rule = Rule(
+        name="adapters-deny",
+        modules="contexts.*.adapters",
+        description="Adapters must not use boto3 directly",
+        deny=AllowDeny(third_party=["boto3"]),
+    )
+    result = check_import(
+        import_info=ImportInfo(module="boto3", lineno=3),
+        category=ImportCategory.THIRD_PARTY,
+        merged_rule=rule,
+        source_module="contexts.boards.adapters",
+    )
+    assert isinstance(result, Violation)
+    assert result.rule_description == "Adapters must not use boto3 directly"

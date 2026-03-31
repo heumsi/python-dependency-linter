@@ -10,11 +10,12 @@ Every rule has two required fields and two optional ones:
 rules:
   - name: my-rule            # Unique identifier for this rule
     modules: my_app.domain   # Which modules this rule applies to
+    description: ...         # (optional) Human-readable description
     allow: { ... }           # (optional) Whitelist of allowed dependencies
     deny: { ... }            # (optional) Blacklist of denied dependencies
 ```
 
-The `name` is used in violation output and in `# pdl: ignore` comments.
+The `name` is used in violation output and in `# pdl: ignore` comments. The optional `description` is also shown in violation output to explain why the rule exists.
 
 ### Fields
 
@@ -22,6 +23,7 @@ The `name` is used in violation output and in `# pdl: ignore` comments.
 |-------|----------|-------------|
 | `name` | Yes | Unique identifier. Must match `[a-zA-Z0-9_-]+`. Shown in violation output and referenced in `# pdl: ignore` comments |
 | `modules` | Yes | Module pattern to apply the rule to. Supports `*`, `**`, and `{name}` captures (see [Patterns](#patterns)) |
+| `description` | No | Human-readable description shown in violation output |
 | `allow` | No | Whitelist of allowed dependencies (see [Allow / Deny](#allow-deny)) |
 | `deny` | No | Blacklist of denied dependencies (see [Allow / Deny](#allow-deny)) |
 
@@ -335,6 +337,7 @@ from contexts.shared.utils import helper  # pdl: ignore
 |-------|----------|-------------|
 | `name` | Yes | Unique identifier, shown in output and referenced in `# pdl: ignore` |
 | `modules` | Yes | Module pattern to apply the rule to |
+| `description` | No | Human-readable description shown in violation output |
 | `allow` | No | Whitelist of allowed dependencies |
 | `deny` | No | Blacklist of denied dependencies |
 

@@ -121,6 +121,7 @@ def merge_rules(rules: list[Rule]) -> Rule:
         merged = Rule(
             name=merged.name,
             modules=merged.modules,
+            description=merged.description,
             allow=_merge_allow_deny(merged.allow, rule.allow),
             deny=_merge_allow_deny(merged.deny, rule.deny),
         )

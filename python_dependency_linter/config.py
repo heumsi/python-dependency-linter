@@ -18,6 +18,7 @@ class AllowDeny:
 class Rule:
     name: str
     modules: str
+    description: str | None = None
     allow: AllowDeny | None = None
     deny: AllowDeny | None = None
 
@@ -54,6 +55,7 @@ def _parse_rules(rules_data: list[dict]) -> list[Rule]:
             Rule(
                 name=name,
                 modules=r["modules"],
+                description=r.get("description"),
                 allow=_parse_allow_deny(r.get("allow")),
                 deny=_parse_allow_deny(r.get("deny")),
             )

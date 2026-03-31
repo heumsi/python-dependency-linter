@@ -14,6 +14,7 @@ def test_load_yaml_config():
     rule = config.rules[0]
     assert rule.name == "domain-isolation"
     assert rule.modules == "contexts.*.domain"
+    assert rule.description is None
     assert rule.allow is not None
     assert rule.allow.standard_library == ["dataclasses", "typing"]
     assert rule.allow.third_party == ["pydantic"]
@@ -181,3 +182,50 @@ rules:
     config_file.write_text(config_content)
     with pytest.raises(ValueError, match=r"Invalid rule name 'rule name 123'"):
         load_config(config_file)
+
+
+def test_load_yaml_config_with_description(tmp_path):
+    config_content = """\
+rules:
+  - name: domain-isolation
+    modules: contexts.*.domain
+    description: Domain layer must remain pure
+    allow:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert config.rules[0].description == "Domain layer must remain pure"
+
+
+def test_load_yaml_config_without_description(tmp_path):
+    config_content = """\
+rules:
+  - name: domain-isolation
+    modules: contexts.*.domain
+    allow:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert config.rules[0].description is None
+
+
+def test_load_toml_config_with_description(tmp_path):
+    config_content = """\
+[tool.python-dependency-linter]
+
+[[tool.python-dependency-linter.rules]]
+name = "domain-isolation"
+modules = "contexts.*.domain"
+description = "Domain layer must remain pure"
+
+[tool.python-dependency-linter.rules.allow]
+third_party = ["pydantic"]
+"""
+    config_file = tmp_path / "pyproject.toml"
+    config_file.write_text(config_content)
+    config = load_config(config_file)
+    assert config.rules[0].description == "Domain layer must remain pure"

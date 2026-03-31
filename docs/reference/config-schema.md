@@ -16,6 +16,7 @@ Complete reference for all configuration fields.
 |-------|------|----------|---------|-------------|
 | `name` | str | Yes | — | Rule identifier, shown in violation output. Must match `[a-zA-Z0-9_-]+` |
 | `modules` | str | Yes | — | Module pattern to apply the rule to. Supports `*`, `**`, and `{name}` captures |
+| `description` | str | No | `null` | Human-readable description shown in violation output |
 | `allow` | [DependencyFilter](#dependencyfilter) | No | `null` | Whitelist of allowed dependencies |
 | `deny` | [DependencyFilter](#dependencyfilter) | No | `null` | Blacklist of denied dependencies |
 
