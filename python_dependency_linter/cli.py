@@ -131,6 +131,9 @@ def check(config_path: str | None):
             category = resolve_import(imp.module, root)
             violation = check_import(imp, category, merged_rule, module, captures)
             if violation is not None:
+                if imp.ignore_rules is not None:
+                    if not imp.ignore_rules or violation.rule_name in imp.ignore_rules:
+                        continue
                 file_violations.append(violation)
 
         if file_violations:

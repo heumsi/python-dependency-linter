@@ -237,3 +237,110 @@ rules:
     result = runner.invoke(main, ["check", "--config", str(config_file)])
     assert result.exit_code == 1
     assert "src/app.py" in result.output
+
+
+def test_cli_check_ignore_blanket(tmp_path, monkeypatch):
+    """``# pdl: ignore`` suppresses all violations on that line."""
+    config_content = """\
+rules:
+  - name: domain-isolation
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / ".python-dependency-linter.yaml"
+    config_file.write_text(config_content)
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text("import pydantic  # pdl: ignore\n")
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["check"])
+    assert result.exit_code == 0
+    assert "No violations found." in result.output
+
+
+def test_cli_check_ignore_specific_rule(tmp_path, monkeypatch):
+    """``# pdl: ignore[rule-name]`` suppresses only the matching rule."""
+    config_content = """\
+rules:
+  - name: deny-pydantic
+    modules: src.*
+    deny:
+      third_party: [pydantic]
+  - name: deny-requests
+    modules: lib.*
+    deny:
+      third_party: [requests]
+"""
+    config_file = tmp_path / ".python-dependency-linter.yaml"
+    config_file.write_text(config_content)
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text("import pydantic  # pdl: ignore[deny-pydantic]\n")
+
+    lib = tmp_path / "lib"
+    lib.mkdir()
+    (lib / "__init__.py").write_text("")
+    (lib / "client.py").write_text("import requests  # pdl: ignore[deny-requests]\n")
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["check"])
+    assert result.exit_code == 0
+    assert "No violations found." in result.output
+
+
+def test_cli_check_ignore_specific_rule_no_match(tmp_path, monkeypatch):
+    """``# pdl: ignore[wrong-name]`` does not suppress a different rule."""
+    config_content = """\
+rules:
+  - name: deny-pydantic
+    modules: "**"
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / ".python-dependency-linter.yaml"
+    config_file.write_text(config_content)
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text("import pydantic  # pdl: ignore[wrong-name]\n")
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["check"])
+    assert result.exit_code == 1
+    assert "[deny-pydantic]" in result.output
+
+
+def test_cli_check_ignore_multiple_rules(tmp_path, monkeypatch):
+    """``# pdl: ignore[rule1, rule2]`` suppresses listed rules."""
+    config_content = """\
+rules:
+  - name: deny-pydantic
+    modules: src.*
+    deny:
+      third_party: [pydantic]
+"""
+    config_file = tmp_path / ".python-dependency-linter.yaml"
+    config_file.write_text(config_content)
+
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "__init__.py").write_text("")
+    (src / "app.py").write_text(
+        "import pydantic  # pdl: ignore[deny-pydantic, other-rule]\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(main, ["check"])
+    assert result.exit_code == 0
+    assert "No violations found." in result.output
