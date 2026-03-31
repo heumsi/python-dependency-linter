@@ -39,6 +39,7 @@ include:
 rules:
   - name: auth-isolation
     modules: auth
+    description: Auth package can only depend on itself and shared
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -46,6 +47,7 @@ rules:
 
   - name: billing-isolation
     modules: billing
+    description: Billing package can only depend on itself and shared
     allow:
       standard_library: ["*"]
       third_party: ["*"]
@@ -58,7 +60,8 @@ If `billing.service` imports `auth.models`:
 
 ```
 packages/billing/billing/service.py:1
-    [billing-isolation] billing.service → auth.models (local)
+    [billing-isolation] Billing package can only depend on itself and shared
+    billing.service → auth.models (local)
 
 Found 1 violation(s).
 ```

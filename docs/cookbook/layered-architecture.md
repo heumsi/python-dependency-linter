@@ -10,6 +10,7 @@ You have a layered architecture (`presentation → application → domain`) and 
 rules:
   - name: domain-isolation
     modules: my_app.domain
+    description: Domain has no outward dependencies
     allow:
       standard_library: ["*"]
       third_party: []
@@ -17,6 +18,7 @@ rules:
 
   - name: application-layer
     modules: my_app.application
+    description: Application depends on domain only, not on presentation
     allow:
       standard_library: ["*"]
       third_party: [pydantic]
@@ -26,6 +28,7 @@ rules:
 
   - name: presentation-layer
     modules: my_app.presentation
+    description: Presentation can depend on application and domain
     allow:
       standard_library: ["*"]
       third_party: [fastapi, pydantic]
@@ -41,7 +44,8 @@ If `my_app.domain.models` imports `sqlalchemy`:
 
 ```
 my_app/domain/models.py:3
-    [domain-isolation] my_app.domain.models → sqlalchemy (third_party)
+    [domain-isolation] Domain has no outward dependencies
+    my_app.domain.models → sqlalchemy (third_party)
 
 Found 1 violation(s).
 ```
@@ -50,7 +54,8 @@ If `my_app.application.service` imports `fastapi`:
 
 ```
 my_app/application/service.py:1
-    [application-layer] my_app.application.service → fastapi (third_party)
+    [application-layer] Application depends on domain only, not on presentation
+    my_app.application.service → fastapi (third_party)
 
 Found 1 violation(s).
 ```

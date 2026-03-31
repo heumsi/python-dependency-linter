@@ -25,7 +25,7 @@ Create `.python-dependency-linter.yaml` in your project root:
 rules:
   - name: domain-isolation
     modules: contexts.*.domain
-    description: Domain layer must remain pure  # optional
+    description: Domain layer must not depend on external services
     allow:
       standard_library: [dataclasses, typing]
       third_party: [pydantic]
@@ -40,7 +40,7 @@ You can embed the same configuration inside `pyproject.toml` using the `[tool.py
 [[tool.python-dependency-linter.rules]]
 name = "domain-isolation"
 modules = "contexts.*.domain"
-description = "Domain layer must remain pure"  # optional
+description = "Domain layer must not depend on external services"
 
 [tool.python-dependency-linter.rules.allow]
 standard_library = ["dataclasses", "typing"]
