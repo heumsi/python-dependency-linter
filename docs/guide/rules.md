@@ -21,7 +21,7 @@ The `name` is used in violation output and in `# pdl: ignore` comments. The opti
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `name` | Yes | Unique identifier. Must match `[a-zA-Z0-9_-]+`. Shown in violation output and referenced in `# pdl: ignore` comments |
+| `name` | Yes | Unique identifier. Must match `[a-zA-Z0-9_.-]+`. Shown in violation output and referenced in `# pdl: ignore` comments |
 | `modules` | Yes | Module pattern to apply the rule to. Supports `*`, `**`, and `{name}` captures (see [Patterns](#patterns)) |
 | `description` | No | Human-readable description shown in violation output |
 | `allow` | No | Whitelist of allowed dependencies (see [Allow / Deny](#allow-deny)) |
