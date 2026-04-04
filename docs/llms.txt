@@ -1,0 +1,23 @@
+# Python Dependency Linter
+
+> A dependency linter for Python projects. Define rules for which modules can depend on what, and catch violations.
+
+## Docs
+
+- [Home](https://heumsi.github.io/python-dependency-linter/): Overview, key features, and quick start examples
+- [Installation](https://heumsi.github.io/python-dependency-linter/getting-started/installation/): Install via pip or uv
+- [Quick Start](https://heumsi.github.io/python-dependency-linter/getting-started/quick-start/): Get pdl running in three steps
+- [Configuration](https://heumsi.github.io/python-dependency-linter/getting-started/configuration/): YAML and pyproject.toml config formats, file discovery, include/exclude
+- [Rules](https://heumsi.github.io/python-dependency-linter/guide/rules/): Rule structure, import categories, allow/deny, patterns, named captures, rule merging, inline ignore
+- [Cookbook](https://heumsi.github.io/python-dependency-linter/cookbook/): Ready-to-use recipes for common scenarios
+- [Layered Architecture](https://heumsi.github.io/python-dependency-linter/cookbook/layered-architecture/): Enforce downward dependency flow in layered architecture
+- [Hexagonal Architecture](https://heumsi.github.io/python-dependency-linter/cookbook/hexagonal-architecture/): Isolate domain from infrastructure with bounded contexts
+- [Clean Architecture](https://heumsi.github.io/python-dependency-linter/cookbook/clean-architecture/): Enforce concentric layer dependencies
+- [Named Capture Recipes](https://heumsi.github.io/python-dependency-linter/cookbook/named-capture-recipes/): Reusable patterns with {name} captures
+- [Monorepo](https://heumsi.github.io/python-dependency-linter/cookbook/monorepo/): Lint multiple packages in a monorepo
+- [Gradual Adoption](https://heumsi.github.io/python-dependency-linter/cookbook/gradual-adoption/): Introduce dependency linting incrementally
+- [Config Schema](https://heumsi.github.io/python-dependency-linter/reference/config-schema/): Complete reference for all configuration fields
+- [CLI](https://heumsi.github.io/python-dependency-linter/cli/): CLI commands, options, and exit codes
+- [Pre-commit](https://heumsi.github.io/python-dependency-linter/pre-commit/): Pre-commit hook setup
+- [Contributing](https://heumsi.github.io/python-dependency-linter/contributing/): Commit convention, PR convention, release process
+- [Changelog](https://heumsi.github.io/python-dependency-linter/changelog/): Version history
