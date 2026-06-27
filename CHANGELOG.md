@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.2] - 2026-06-27
+
+### Documentation
+
+- Add language identifiers to all fenced code blocks
+- Add llms.txt for LLM-friendly documentation index
+- Add internal architecture README for the package
+
+### Miscellaneous
+
+- Add pygments dependency
+- Remove unused pygments runtime dependency
+
+### Refactor
+
+- Layer modules into core/domain/io and self-lint with pdl
 ## [0.7.1] - 2026-03-31
 
 ### Bug Fixes
