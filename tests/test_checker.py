@@ -1,7 +1,11 @@
-from python_dependency_linter.checker import Violation, check_import, resolve_captures
-from python_dependency_linter.config import AllowDeny, Rule
-from python_dependency_linter.parser import ImportInfo
-from python_dependency_linter.resolver import ImportCategory
+from python_dependency_linter.core.config import AllowDeny, Rule
+from python_dependency_linter.core.parser import ImportInfo
+from python_dependency_linter.core.resolver import ImportCategory
+from python_dependency_linter.domain.checker import (
+    Violation,
+    check_import,
+    resolve_captures,
+)
 
 
 def test_allow_all_when_no_rules():

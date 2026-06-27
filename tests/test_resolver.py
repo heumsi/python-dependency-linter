@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from python_dependency_linter.resolver import ImportCategory, resolve_import
+from python_dependency_linter.core.resolver import ImportCategory, resolve_import
 
 FIXTURES = Path(__file__).parent / "fixtures" / "sample_project"
 

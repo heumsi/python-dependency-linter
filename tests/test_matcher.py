@@ -1,5 +1,5 @@
-from python_dependency_linter.config import AllowDeny, Rule
-from python_dependency_linter.matcher import (
+from python_dependency_linter.core.config import AllowDeny, Rule
+from python_dependency_linter.core.matcher import (
     find_matching_rules,
     match_pattern_with_captures,
     matches_pattern,

@@ -17,3 +17,9 @@ repos:
         language: system
         pass_filenames: false
         types: [python]
+      - id: pdl check
+        name: pdl check (self-lint)
+        entry: uv run pdl check
+        language: system
+        pass_filenames: false
+        types: [python]

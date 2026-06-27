@@ -7,6 +7,7 @@ on:
       - "python_dependency_linter/**"
       - "tests/**"
       - "pyproject.toml"
+      - ".python-dependency-linter.yaml"
 
 jobs:
   lint:
@@ -21,6 +22,7 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       - run: ty check
+      - run: pdl check
 
   test:
     runs-on: ubuntu-latest

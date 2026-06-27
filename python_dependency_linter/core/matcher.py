@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from python_dependency_linter.config import AllowDeny, Rule
+from python_dependency_linter.core.config import AllowDeny, Rule
 
 _CAPTURE_RE = re.compile(r"^\{(\w+)\}$")
 

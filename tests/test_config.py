@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from python_dependency_linter.config import find_config, load_config
+from python_dependency_linter.core.config import find_config, load_config
 
 FIXTURES = Path(__file__).parent / "fixtures"
 

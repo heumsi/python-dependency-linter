@@ -1,0 +1,37 @@
+# Self-lint config: enforce pdl's own layered dependency boundaries.
+#
+#   core   (config, parser, resolver, matcher) — no other layer; only config-parsing deps (yaml, tomli)
+#   domain (checker)                            — may depend on core; no third-party
+#   io     (reporter)                           — may depend on domain, core; no third-party
+#   cli                                         — entry point; may depend on all (click lives here)
+#
+# `local` constrains intra-project layering; `third_party` keeps external
+# packages out of the inner layers. standard_library is intentionally left open.
+
+include:
+  - python_dependency_linter
+
+rules:
+  - name: core-isolation
+    modules: python_dependency_linter.core
+    description: Core must not depend on other layers
+    allow:
+      local: [python_dependency_linter.core]
+      third_party: [yaml, tomli]
+
+  - name: domain-deps
+    modules: python_dependency_linter.domain
+    description: Domain may depend on core only
+    allow:
+      local: [python_dependency_linter.domain, python_dependency_linter.core]
+      third_party: []
+
+  - name: io-deps
+    modules: python_dependency_linter.io
+    description: IO may depend on domain and core
+    allow:
+      local:
+        - python_dependency_linter.io
+        - python_dependency_linter.domain
+        - python_dependency_linter.core
+      third_party: []

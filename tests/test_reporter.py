@@ -1,6 +1,6 @@
-from python_dependency_linter.checker import Violation
-from python_dependency_linter.reporter import format_violations
-from python_dependency_linter.resolver import ImportCategory
+from python_dependency_linter.core.resolver import ImportCategory
+from python_dependency_linter.domain.checker import Violation
+from python_dependency_linter.io.reporter import format_violations
 
 
 def test_format_violations_without_description():

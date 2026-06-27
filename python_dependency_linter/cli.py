@@ -5,12 +5,12 @@ from pathlib import Path
 
 import click
 
-from python_dependency_linter.checker import check_import
-from python_dependency_linter.config import find_config, load_config
-from python_dependency_linter.matcher import find_matching_rules, merge_rules
-from python_dependency_linter.parser import parse_imports
-from python_dependency_linter.reporter import format_violations
-from python_dependency_linter.resolver import resolve_import
+from python_dependency_linter.core.config import find_config, load_config
+from python_dependency_linter.core.matcher import find_matching_rules, merge_rules
+from python_dependency_linter.core.parser import parse_imports
+from python_dependency_linter.core.resolver import resolve_import
+from python_dependency_linter.domain.checker import check_import
+from python_dependency_linter.io.reporter import format_violations
 
 
 def _file_to_module(file_path: Path, project_root: Path) -> str:

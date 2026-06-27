@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from python_dependency_linter.config import AllowDeny, Rule
-from python_dependency_linter.matcher import matches_pattern
-from python_dependency_linter.parser import ImportInfo
-from python_dependency_linter.resolver import ImportCategory
+from python_dependency_linter.core.config import AllowDeny, Rule
+from python_dependency_linter.core.matcher import matches_pattern
+from python_dependency_linter.core.parser import ImportInfo
+from python_dependency_linter.core.resolver import ImportCategory
 
 _CAPTURE_RE = re.compile(r"\{(\w+)\}")
 

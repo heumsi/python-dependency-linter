@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from python_dependency_linter.checker import Violation
+from python_dependency_linter.domain.checker import Violation
 
 
 def format_violations(file_path: str, violations: list[Violation]) -> str:

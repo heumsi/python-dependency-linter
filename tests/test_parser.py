@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from python_dependency_linter.parser import (
+from python_dependency_linter.core.parser import (
     ImportInfo,
     _parse_ignore_comment,
     parse_imports,
