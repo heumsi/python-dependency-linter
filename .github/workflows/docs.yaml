@@ -22,7 +22,7 @@ jobs:
           python-version: "3.13"
       - run: uv pip install --system mkdocs mkdocs-shadcn
       - run: mkdocs build --strict
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site/
       - id: deployment
