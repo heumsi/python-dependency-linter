@@ -56,7 +56,8 @@ All commits must pass the pre-commit hooks before being accepted.
 
 ## Release
 
-Releases are automated via GitHub Actions. You only need to create and push a version tag.
+Update the changelog and tag the commit that contains it, then push both. The rest is
+automated via GitHub Actions.
 
 ### Steps
 
@@ -68,17 +69,32 @@ Releases are automated via GitHub Actions. You only need to create and push a ve
    ```bash
    git log $(git describe --tags --abbrev=0)..HEAD --oneline
    ```
-3. Push the latest commits to `main`:
+3. Update `CHANGELOG.md` for the new version:
    ```bash
-   git push origin main
+   uvx git-cliff --tag <version> -o CHANGELOG.md
    ```
-4. Create and push the tag:
+   Passing the version explicitly keeps the changelog, the commit message and the tag from
+   drifting apart. `uvx git-cliff --bump -o CHANGELOG.md` works too, and picks the version
+   itself.
+4. Commit the changelog:
+   ```bash
+   git commit -m "📝 docs: Update CHANGELOG for <version>" CHANGELOG.md
+   ```
+5. Tag that commit:
    ```bash
    git tag <version>
+   ```
+6. Push the commit and the tag:
+   ```bash
+   git push origin main
    git push origin <version>
    ```
 
-The GitHub Actions workflow will then automatically:
-- Generate `CHANGELOG.md` and commit it to `main`
-- Create a GitHub Release with release notes
-- Publish the package to PyPI
+The GitHub Actions workflows will then automatically:
+- Create a GitHub Release with release notes, and publish the package to PyPI (from the tag)
+- Deploy the documentation site (from the `CHANGELOG.md` change on `main`)
+
+The changelog is written before tagging on purpose. A workflow could generate it after the
+tag instead, but it would have to commit the result back to `main`, and pushes made with the
+built-in `GITHUB_TOKEN` do not trigger other workflows — so the docs site would never
+redeploy. Writing it first keeps the tag, the changelog, and the docs in sync.
