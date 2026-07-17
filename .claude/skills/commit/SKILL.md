@@ -16,9 +16,11 @@ Create a git commit following the project's commit convention defined in [CONTRI
    git commit -m "$(cat <<'EOF'
    <commit message here>
 
-   Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+   Co-Authored-By: Claude <model> <noreply@anthropic.com>
    EOF
    )"
    ```
+   Replace `<model>` with the name of the model you are actually running as
+   (e.g. `Opus 4.8 (1M context)`), so the trailer stays accurate as models change.
 6. Run `git status` to verify success.
 7. If pre-commit hook fails, fix the issue and create a **new** commit (never amend).
