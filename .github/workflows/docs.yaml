@@ -6,7 +6,17 @@ on:
     paths:
       - "docs/**"
       - "mkdocs.yml"
+      # Pulled into the docs site via pymdownx.snippets.
+      - "CHANGELOG.md"
+      - "CONTRIBUTING.md"
+      # Changing how the site is built should redeploy it too.
+      - ".github/workflows/docs.yaml"
   workflow_dispatch:
+
+# Allow only one concurrent deployment, and let in-flight ones finish.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   docs:
