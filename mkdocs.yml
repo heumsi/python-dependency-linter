@@ -22,6 +22,10 @@ markdown_extensions:
   - attr_list
   - toc:
       permalink: true
+  # Lets docs/changelog.md and docs/contributing.md pull in the canonical
+  # files from the repo root, so there is only ever one copy to maintain.
+  - pymdownx.snippets:
+      base_path: ["."]
 
 nav:
   - Home: index.md
